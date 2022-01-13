@@ -21,3 +21,25 @@ How to use it
 
 4. run starrocks-controller as bellowing
 [root@r22 ~]# ./sr-controller-main
+
+
+
+
+-------------------------------------------------------------------
+
+如何使用
+1. yum install -y mysql
+2. mkdir -p /root/.starrocks-controller/download
+3. 从官网下载 jdk-8u301-linux-x64.tar.gz & StarRocks-2.0.0-GA.tar.gz 
+-- 其实这里是可以自动下载的，可以查看一下 sr-controller/playground/prepare/preparePkg.go
+
+-- 里面是有下载链接的，pkgUrl := "http://10.10.10.20:9000/starrocks/StarRocks-2.0.0-GA.tar.gz"
+
+-- 这里本来是我的云服务器，但是太穷了，只有 1MB 的带宽，下载要两个多小时，所以我改成了内网 ip，关闭了自动下载的入口
+
+-- 官网的链接里面都设置了下载过期
+
+4. 直接运行 starrocks-controller-main
+-- chmod 751 starrocks-controller-main && ./starrocks-controller-main
+
+
