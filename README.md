@@ -1,5 +1,6 @@
 # starrocks-controller
 In currently, I just build the playground functionality. 
+
 Next step, I will build setup/startup/stop functionality
 
 How to use it
@@ -29,6 +30,7 @@ How to use it
 
 -------------------------------------------------------------------
 目前，我只开发了 playground 功能，接下来，我将开发 setup/startup/stop 功能
+
 如何使用
 1. yum install -y mysql
 2. mkdir -p /root/.starrocks-controller/download
