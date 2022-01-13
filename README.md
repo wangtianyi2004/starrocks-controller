@@ -1,4 +1,6 @@
 # starrocks-controller
+In currently, I just build the playground functionality. 
+Next step, I will build setup/startup/stop functionality
 
 How to use it
 1. yum install -y mysql
@@ -26,11 +28,12 @@ How to use it
 
 
 -------------------------------------------------------------------
-
+目前，我只开发了 playground 功能，接下来，我将开发 setup/startup/stop 功能
 如何使用
 1. yum install -y mysql
 2. mkdir -p /root/.starrocks-controller/download
 3. 从官网下载 jdk-8u301-linux-x64.tar.gz & StarRocks-2.0.0-GA.tar.gz 
+
 -- 其实这里是可以自动下载的，可以查看一下 sr-controller/playground/prepare/preparePkg.go
 
 -- 里面是有下载链接的，pkgUrl := "http://10.10.10.20:9000/starrocks/StarRocks-2.0.0-GA.tar.gz"
