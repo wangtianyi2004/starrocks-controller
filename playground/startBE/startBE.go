@@ -11,12 +11,22 @@ import (
 func ModifyBEConfig() {
 
     var modFile string
+    var srcConfig string
+    var tarConfig string
+    var infoMess string
 
     // modify priority_networks for be.conf
     modFile = "/root/.starrocks-controller/playground/be/conf/be.conf"
-    utl.ModifyConfig(modFile, "# priority_networks = 10.10.10.0/24;192.168.0.0/16", "# priority_networks = 10.10.10.0/24;192.168.0.0/16\npriority_networks = 127.0.0.1")
-    fmt.Printf("Mofify priority_networks for be.conf, append priority_networks = 127.0.0.1\n")
-
+    srcConfig = "# priority_networks = 10.10.10.0/24;192.168.0.0/16"
+    tarConfig = "# priority_networks = 10.10.10.0/24;192.168.0.0/16\npriority_networks = 127.0.0.1"
+    err := utl.ModifyConfig(modFile, srcConfig, tarConfig)
+    if err != nil {
+        infoMess = fmt.Sprintf("Error in modifing BE config [modFile = %s, srcConfig = %s, tarConfig = %s]", modFile, srcConfig, tarConfig)
+	utl.Log("ERROR", infoMess)
+	panic(err)
+    }
+    infoMess = fmt.Sprintf("Modify BE config [modFile = %s, srcConfig = %s, tarConfig = %s]", modFile, srcConfig, tarConfig)
+    utl.Log("INFO", infoMess)
 }
 
 

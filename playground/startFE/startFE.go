@@ -11,21 +11,47 @@ import(
 func ModifyFEConfig() {
 
     var modFile string
-
+    var srcConfig string
+    var tarConfig string
+    var infoMess string
     // modify JAVA_OPS for fe.conf
     modFile = "/root/.starrocks-controller/playground/fe/conf/fe.conf"
-    utl.ModifyConfig(modFile, "-Xmx8192m", "-Xmx512m")
-    fmt.Printf("Modify JAVA_OPS for fe.con, \"-Xmx8192m\" => \"-Xmx512m\"\n")
+    srcConfig = "-Xmx8192m"
+    tarConfig = "-Xmx512m"
+    err := utl.ModifyConfig(modFile, srcConfig, tarConfig)
+    if err != nil {
+        infoMess = fmt.Sprintf("Error in modify FE configuration [modFile = %s, srcConfig = %s, tarConfig = %s]", modFile, srcConfig, tarConfig)
+        utl.Log("ERROR", infoMess)
+	panic(err)
+    }
+    infoMess = fmt.Sprintf("Modify FE configuration [modFile = %s, srcConfig = %s, tarConfig = %s]", modFile, srcConfig, tarConfig)
+    utl.Log("INFO", infoMess)
 
     // modify priority_networks for fe.conf
     modFile = "/root/.starrocks-controller/playground/fe/conf/fe.conf"
-    utl.ModifyConfig(modFile, "# priority_networks = 10.10.10.0/24;192.168.0.0/16", "# priority_networks = 10.10.10.0/24;192.168.0.0/16\npriority_networks = 127.0.0.1")
-    fmt.Printf("Mofify priority_networks for fe.conf, append priority_networks = 127.0.0.1\n")
+    srcConfig = "# priority_networks = 10.10.10.0/24;192.168.0.0/16"
+    tarConfig = "# priority_networks = 10.10.10.0/24;192.168.0.0/16\npriority_networks = 127.0.0.1"
+    err = utl.ModifyConfig(modFile, srcConfig, tarConfig)
+    if err != nil {
+        infoMess = fmt.Sprintf("Error in modify FE configuration [modFile = %s, srcConfig = %s, tarConfig = %s]", modFile, srcConfig, tarConfig)
+	utl.Log("ERROR", infoMess)
+	panic(err)
+    }
+    infoMess = fmt.Sprintf("Modify FE configuration [modFile = %s, srcConfig = %s, tarConfig = %s]", modFile, srcConfig, tarConfig)
+    utl.Log("INFO", infoMess)
 
     // modify JAVA_HOME for start_fe.sh
     modFile = "/root/.starrocks-controller/playground/fe/bin/start_fe.sh"
-    utl.ModifyConfig(modFile, "# java", "# java\nJAVA_HOME=/root/.starrocks-controller/playground/jdk1.8.0\n")
-    fmt.Printf("Modify JAVA_HOME for start_fe.sh, append JAVA_HOME=/root/.starrocks-controller/playground/jdk1.8.0\n")
+    srcConfig = "# java"
+    tarConfig = "# java\nJAVA_HOME=/root/.starrocks-controller/playground/jdk1.8.0\n"
+    err = utl.ModifyConfig(modFile, srcConfig, tarConfig)
+    if err != nil {
+        infoMess = fmt.Sprintf("Error in modify FE configuration [modFile = %s, srcConfig = %s, tarConfig = %s]", modFile, srcConfig, tarConfig)
+        utl.Log("ERROR", infoMess)
+        panic(err)
+    }
+    infoMess = fmt.Sprintf("Modify FE configuration [modFile = %s, srcConfig = %s, tarConfig = %s]", modFile, srcConfig, tarConfig)
+    utl.Log("INFO", infoMess)
 
 }
 

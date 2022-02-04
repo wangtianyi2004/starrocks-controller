@@ -10,28 +10,28 @@ import (
 
 )
 
-func DebugTest() {
-
-    fmt.Println("This is DebugTest")
-}
 
 func IsFileExist(absFileName string, fileSize int64) bool {
 
+    var infoMess string
     info, err := os.Stat(absFileName)
 
     if os.IsNotExist(err) {
-        fmt.Println(info)
+        infoMess = fmt.Sprintf("Detect file %s doesn't exist.", absFileName)
+        Log("INFO", infoMess)
         return false
     }
 
     if fileSize == info.Size() {
-        fmt.Println("The package has already exist.", info.Name(), info.Size(), info.ModTime())
+        infoMess = fmt.Sprintf("[download] The package has already exist.", info.Name(), info.Size(), info.ModTime())
+        Log("INFO", infoMess)
         return true
     }
 
     del := os.Remove(absFileName)
     if del != nil {
-        fmt.Println(del)
+        infoMess = fmt.Sprintf("Delete file %s", absFileName)
+        Log("WARN", infoMess)
     }
 
     return false
@@ -39,35 +39,49 @@ func IsFileExist(absFileName string, fileSize int64) bool {
 
 func DownloadFile(fileUrl string, localPath string, fileName string) {
 
-
+    var infoMess string
     tmpFileName := localPath + "/" + fileName + ".download"
     absFileName := localPath + "/" + fileName
 
     client := new(http.Client)
     resp, err := client.Get(fileUrl)
-    if err != nil { panic(err) }
+    if err != nil { 
+        infoMess = fmt.Sprintf("Error in get the response for %s", fileUrl)
+        Log("ERROR", infoMess)
+        panic(err) 
+    }
+
     fileSize, err := strconv.ParseInt(resp.Header.Get("Content-Length"), 10, 32)
-    if err != nil { fmt.Println(err) }
-    fmt.Println("file size is ", fileSize)
+    if err != nil { 
+        infoMess = fmt.Sprintf("Error in parsing the size for file %s", fileUrl)
+        Log("ERROR", infoMess)
+    }
 
     if IsFileExist(absFileName, fileSize) {
-        fmt.Println("file exists.")
+        // the file exist, it doesn't need to download the one
+	return
     }
 
     tmpFile, err := os.Create(tmpFileName)
-    if err != nil { panic(err)}
+    if err != nil {
+        infoMess = fmt.Sprintf("Error in create the tmp file %s", tmpFileName)
+        Log("ERROR", infoMess)
+        panic(err)
+    }
     defer tmpFile.Close()
 
 
     if resp.Body == nil {
-        fmt.Println("The download file Body is null.")
+        Log("WARN", "The download file Body is null.")
     }
     io.Copy(tmpFile, resp.Body)
 
     if err == nil {
         err = os.Rename(tmpFileName, absFileName)
     }
-    fmt.Printf("The file %s [%d] download successfully", fileName, fileSize)
+
+    infoMess = fmt.Sprintf("The file %s [%d] download successfully", fileName, fileSize)
+    Log("INFO", infoMess)
 
 }
 
