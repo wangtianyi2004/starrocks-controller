@@ -35,16 +35,16 @@ func StartFeCluster() {
 	tmpQueryPort = module.GYamlConf.FeServers[i].QueryPort
 	tmpFeDeployDir = module.GYamlConf.FeServers[i].DeployDir
 
-        infoMess = fmt.Sprintf("Starting FE node [FeHost = %s, FeEditLogPort = %d]", tmpSshHost, tmpEditLogPort)
-	utl.Log("INFO", infoMess)
+        //infoMess = fmt.Sprintf("Starting FE node [FeHost = %s, FeEditLogPort = %d]", tmpSshHost, tmpEditLogPort)
+	//utl.Log("INFO", infoMess)
 
         for startTimeInd := 0; startTimeInd < 3; startTimeInd++ {
 	    // startFeNode(user string, keyRsa string, sshHost string, sshPort int, editLogPort int, feDeployDir string) (err error)
-	    infoMess = fmt.Sprintf("The %d time to start [%s]\n", startTimeInd, tmpSshHost)
-	    utl.Log("INFO", infoMess)
+	    infoMess = fmt.Sprintf("The %d time to start [%s]", (startTimeInd + 1), tmpSshHost)
+	    utl.Log("DEBUG", infoMess)
 	    err = startFeNode(tmpUser, tmpKeyRsa, tmpSshHost, tmpSshPort, tmpEditLogPort, tmpFeDeployDir)
-
-	    time.Sleep(10 * time.Second)
+	    startWaitTime := time.Duration(20 - startTimeInd * 5)
+	    time.Sleep(startWaitTime * time.Second)
 
 	    feStat, _ = CheckFeStatus(tmpUser, tmpKeyRsa, tmpSshHost, tmpSshPort, tmpQueryPort)
             if feStat.FeAlive {
@@ -61,27 +61,7 @@ func StartFeCluster() {
 	    infoMess = fmt.Sprintf("The FE node start failed [host = %s, queryPort = %d, error = %v]", tmpSshHost, tmpQueryPort, err)
 	    utl.Log("ERROR", infoMess)
 	}
-	feStatusList = feStatusList + fmt.Sprintf("feHost = %s\tfeQueryPort = %d\tfeStatus = true\n", tmpSshHost, tmpQueryPort)
-
-
-
-	    /*
-	    if err != nil {
-	        infoMess = fmt.Sprintf("Error in start FE node [FeHost = %s, FeQueryPort = %d, error = %v]", tmpSshHost, tmpQueryPort, err)
-		utl.Log("DEBUG", infoMess)
-	    } else {
-	        if !feStat.FeAlive {
-		    infoMess = fmt.Sprintf("The FE node doesn't start, wait for 10s [FeHost = %s, FeQueryPort = %d]", tmpSshHost, tmpQueryPort)
-                    utl.Log("WARN", infoMess)
-		} else {
-		    infoMess = fmt.Sprintf("The FE node start succefully [host = %s, queryPort = %d]", tmpSshHost, tmpQueryPort)
-		    utl.Log("INFO", infoMess)
-		    //feStatusList = feStatusList + fmt.Sprintf("feHost = %s\tfeQueryPort = %s\tfeStatus = true\n", tmpSshHost, tmpQueryPort)
-		    break
-		}
-	    }
-            */
-
+	feStatusList = feStatusList + "                                        " + fmt.Sprintf("feHost = %-20sfeQueryPort = %d     feStatus = true\n", tmpSshHost, tmpQueryPort)
     } // FOR-END: list all FE node
     feStatusList = "List all FE status:\n" + feStatusList
     utl.Log("INFO", feStatusList)
@@ -121,14 +101,14 @@ func startFeNode(user string, keyRsa string, sshHost string, sshPort int, editLo
 
         _, err := utl.RunSQL(sqlUserName, sqlPassword, sqlIp, sqlPort, sqlDbName,addFollowerSql)
         if err != nil {
-            infoMess = fmt.Sprintf(`Error in add follower fe node, [
-                    sqlUserName = %s
-                    sqlPassword = %s
-                    sqlIP = %s
-                    sqlPort = %d
-                    sqlDBName = %s
-                    addFollowerSQL =%s
-                    errMess = %v]`, sqlUserName, sqlPassword, sqlIp, sqlPort, sqlDbName,addFollowerSql, err)
+            infoMess = fmt.Sprintf(`Error in add follower fe node:
+                                        sqlUserName = %s
+                                        sqlPassword = %s
+                                        sqlIP = %s
+                                        sqlPort = %d
+                                        sqlDBName = %s
+                                        addFollowerSQL = %s
+                                        errMess = %v`, sqlUserName, sqlPassword, sqlIp, sqlPort, sqlDbName,addFollowerSql, err)
             utl.Log("ERROR", infoMess)
 	    return err
         }
@@ -140,20 +120,20 @@ func startFeNode(user string, keyRsa string, sshHost string, sshPort int, editLo
 
     _, err = utl.SshRun(user, keyRsa, sshHost, sshPort, startFeCmd)
     if err != nil {
-        infoMess = fmt.Sprintf(`Waiting for startMastertFeNode:
-                    user = %s
-                    keyRsa = %s
-                    sshHost = %s
-                    sshPort = %d
-                    feDeployDir = %s`,
-                user, keyRsa, sshHost, sshPort, feDeployDir)
-        utl.Log("WARN", infoMess)
+        infoMess = fmt.Sprintf(`Waiting for starting FE node:
+                                        user = %s
+                                        keyRsa = %s
+                                        sshHost = %s
+                                        sshPort = %d
+                                        feDeployDir = %s`, user, keyRsa, sshHost, sshPort, feDeployDir)
+        utl.Log("DEBUG", infoMess)
         return err
     }
 
     utl.Log("INFO", "广告招租 ****************************")
     utl.Log("INFO", "充值，跳过广告 **********************")
-    time.Sleep(5 * time.Second)
+    //time.Sleep(10 * time.Second)
     return nil
 }
+
 

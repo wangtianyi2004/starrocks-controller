@@ -7,6 +7,29 @@ import(
 )
 
 
+func CreateDir() {
+
+    var infoMess string
+
+    infoMess = "Create the deploy folder ..."
+    utl.Log("OUTPUT", infoMess)
+    CreateiSrCtlDir()
+    CreateFeDir()
+    CreateBeDir()
+
+}
+
+func CreateiSrCtlDir() {
+
+    // create SrCtlDir
+    // SRCTLROOT/{download,tmp}
+
+    utl.MkDir(module.GSRCtlRoot+"/tmp")
+    utl.MkDir(module.GSRCtlRoot+"/download")
+    utl.MkDir(module.GSRCtlRoot+"/cluster")
+
+}
+
 func CreateFeDir() {
 
     var infoMess string
@@ -25,7 +48,7 @@ func CreateFeDir() {
         // create DEPLOY dir for FE nodes
         cmd = fmt.Sprintf("mkdir -p %s", module.GYamlConf.FeServers[i].DeployDir)
         infoMess = fmt.Sprintf("Create DEPLOY Folder for FE node: %s@%s:%d \"%s\"", sshUser, sshHost, sshPort, cmd)
-        utl.Log("INFO", infoMess)
+        utl.Log("DEBUG", infoMess)
 
         _, err = utl.SshRun(sshUser, sshKeyRsaFile, sshHost, sshPort, cmd)
         if err != nil {
@@ -37,7 +60,7 @@ func CreateFeDir() {
         // create META dir for FE nodes
         cmd = fmt.Sprintf("mkdir -p %s", module.GYamlConf.FeServers[i].MetaDir)
         infoMess = fmt.Sprintf("Create META Folder for FE node: %s@%s:%d \"%s\"", sshUser, sshHost, sshPort, cmd) 
-        utl.Log("INFO", infoMess)
+        utl.Log("DEBUG", infoMess)
 
         _, err = utl.SshRun(sshUser, sshKeyRsaFile, sshHost, sshPort, cmd)
         if err != nil {
@@ -45,11 +68,11 @@ func CreateFeDir() {
             utl.Log("ERROR", errMess)
             panic(err)
         }
-        
+
         if module.GYamlConf.FeServers[i].DeployDir + "/meta" != module.GYamlConf.FeServers[i].MetaDir {
             cmd = fmt.Sprintf("ln -s %s %s", module.GYamlConf.FeServers[i].MetaDir, module.GYamlConf.FeServers[i].DeployDir + "/meta")
             infoMess = fmt.Sprintf("Detect MetaDir isn't under DeployDir, Create the soft link, CMD %s", cmd)
-            utl.Log("WARN", infoMess)
+            utl.Log("DEBUG", infoMess)
             _, err := utl.SshRun(sshUser, sshKeyRsaFile, sshHost, sshPort, cmd)
             if err != nil {
                 errMess = fmt.Sprintf("Error in create soft link for MetaDir, CMD %s", cmd)
@@ -61,7 +84,7 @@ func CreateFeDir() {
         // create LOG dir for FE nodes
         cmd = fmt.Sprintf("mkdir -p %s", module.GYamlConf.FeServers[i].LogDir)
         infoMess = fmt.Sprintf("Create LOG Folder for FE node: %s@%s:%d \"%s\"", sshUser, sshHost, sshPort, cmd)
-        utl.Log("INFO", infoMess)
+        utl.Log("DEBUG", infoMess)
 
         _, err = utl.SshRun(sshUser, sshKeyRsaFile, sshHost, sshPort, cmd)
         if err != nil {
@@ -92,7 +115,7 @@ func CreateBeDir() {
         // create DEPLOY dir for BE nodes
         cmd = fmt.Sprintf("mkdir -p %s", module.GYamlConf.BeServers[i].DeployDir)
         infoMess = fmt.Sprintf("Create DEPLOY Folder for BE node: %s@%s:%d \"%s\"", sshUser, sshHost, sshPort, cmd)
-        utl.Log("INFO", infoMess)
+        utl.Log("DEBUG", infoMess)
 
         _, err = utl.SshRun(sshUser, sshKeyRsaFile, sshHost, sshPort, cmd)
         if err != nil {
@@ -104,7 +127,7 @@ func CreateBeDir() {
         // create STORAGE dir for BE nodes
         cmd = fmt.Sprintf("mkdir -p %s", module.GYamlConf.BeServers[i].StorageDir)
         infoMess = fmt.Sprintf("Create Storage Folder for BE node: %s@%s:%d \"%s\"", sshUser, sshHost, sshPort, cmd)
-        utl.Log("INFO", infoMess)
+        utl.Log("DEBUG", infoMess)
 
         _, err = utl.SshRun(sshUser, sshKeyRsaFile, sshHost, sshPort, cmd)
         if err != nil {
@@ -116,7 +139,7 @@ func CreateBeDir() {
         if module.GYamlConf.BeServers[i].DeployDir + "/storage" != module.GYamlConf.BeServers[i].StorageDir {
             cmd = fmt.Sprintf("ln -s %s %s", module.GYamlConf.BeServers[i].StorageDir, module.GYamlConf.BeServers[i].DeployDir + "/storage")
             infoMess = fmt.Sprintf("Detect StorageDir isn't under DeployDir, Create the soft link, CMD %s", cmd)
-            utl.Log("WARN", infoMess)
+            utl.Log("DEBUG", infoMess)
             _, err := utl.SshRun(sshUser, sshKeyRsaFile, sshHost, sshPort, cmd)
             if err != nil {
                 errMess = fmt.Sprintf("Error in create soft link for StorageDir, CMD %s", cmd)
@@ -128,7 +151,7 @@ func CreateBeDir() {
         // create LOG dir for BE nodes
         cmd = fmt.Sprintf("mkdir -p %s", module.GYamlConf.BeServers[i].LogDir)
         infoMess = fmt.Sprintf("Create LOG Folder for BE node: %s@%s:%d \"%s\"", sshUser, sshHost, sshPort, cmd)
-        utl.Log("INFO", infoMess)
+        utl.Log("DEBUG", infoMess)
 
         _, err = utl.SshRun(sshUser, sshKeyRsaFile, sshHost, sshPort, cmd)
         if err != nil {

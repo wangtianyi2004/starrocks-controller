@@ -3,7 +3,7 @@ package startFe
 import (
     "fmt"
     "strings"
-    //"strconv"
+    "strconv"
     "sr-controller/sr-utl"
     "sr-controller/module"
     "database/sql"
@@ -46,9 +46,9 @@ func CheckFeStatus(user string, keyRsa string, sshHost string, sshPort int, feQu
 	return false
     }
     */
-    if strings.Contains(string(output), ": " + string(feQueryPort)) {
+    if strings.Contains(string(output), ":" + strconv.Itoa(feQueryPort)) {
         infoMess = fmt.Sprintf("Check the fe query port %s:%d run successfully", sshHost, feQueryPort)
-	utl.Log("INFO", infoMess)
+	utl.Log("OUTPUT", infoMess)
     }
 
     // check fe status by jdbc (from the master fe node)
@@ -62,13 +62,13 @@ func CheckFeStatus(user string, keyRsa string, sshHost string, sshPort int, feQu
     rows, err := utl.RunSQL(feMasterUserName, feMasterPassword, feMasterIP, feMasterQueryPort, feMasterDbName, sqlStat)
     if err != nil{
         infoMess = fmt.Sprintf(`Error in run sql when check fe status:
-	      feUserName = %s
-	      fePassword = %s
-	      feIP = %s
-	      queryPort = %d
-	      dbName = %s
-	      sqlStat = %s]
-	      error = %v`,
+                                        feUserName = %s
+                                        fePassword = %s
+                                        feIP = %s
+                                        queryPort = %d
+                                        dbName = %s
+                                        sqlStat = %s]
+                                        error = %v`,
           feMasterUserName, feMasterPassword, feMasterIP, feMasterQueryPort, feMasterDbName, sqlStat, err)
         utl.Log("ERROR", infoMess)
 	return feStat, err
@@ -94,13 +94,13 @@ func CheckFeStatus(user string, keyRsa string, sshHost string, sshPort int, feQu
                           &feStat.FeVersion)
         if err != nil {
 	    infoMess = fmt.Sprintf(`Error in scan sql result:
-                         feUserName = %s
-                         fePassword = %s
-                         feIP = %s
-                         queryPort = %d
-                         dbName = %s
-                         sqlStat = %s]
-			 error = %v`,
+                                        feUserName = %s
+                                        fePassword = %s
+                                        feIP = %s
+                                        queryPort = %d
+                                        dbName = %s
+                                        sqlStat = %s]
+                                        error = %v`,
                      feMasterUserName, feMasterPassword, feMasterIP, feMasterQueryPort, feMasterDbName, sqlStat, err)
             utl.Log("ERROR", infoMess)
 	    return feStat, err
@@ -112,6 +112,6 @@ func CheckFeStatus(user string, keyRsa string, sshHost string, sshPort int, feQu
 
     }
 
-    return feStat, err 
+    return feStat, err
 
 }

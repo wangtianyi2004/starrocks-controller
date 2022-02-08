@@ -23,7 +23,7 @@ func IsFileExist(absFileName string, fileSize int64) bool {
     }
 
     if fileSize == info.Size() {
-        infoMess = fmt.Sprintf("[download] The package has already exist.", info.Name(), info.Size(), info.ModTime())
+        infoMess = fmt.Sprintf("The package has already exist [fileName = %v, fileSize = %v, fileModTime = %v]", info.Name(), info.Size(), info.ModTime())
         Log("INFO", infoMess)
         return true
     }

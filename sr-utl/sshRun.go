@@ -70,10 +70,10 @@ func sshRun(config *ssh.ClientConfig, host string, port int, command string) (ou
     }
 
     infoMess = fmt.Sprintf(`ssh run: 
-                                      host = %s
-		                      cmd = %s
-		                      error = %v
-		                      result = %v`, host, command, errmess, string(outPut))
+                                        host = %s
+                                        cmd = %s
+                                        error = %v
+                                        result = %v`, host, command, errmess, string(outPut))
     Log("DEBUG", infoMess)
 
     return outPut, err
@@ -250,7 +250,7 @@ func UploadDir(user string, keyFile string, host string, port int, sourceDir str
     _, err = SshRun(user, keyFile, host, port, cmd)
     if err != nil {
 	infoMess = fmt.Sprintf("The target dir [%s] doesn't exist on [%s:%d], create a new one", targetDir, host, port)
-	Log("WARN", infoMess)
+	Log("DEBUG", infoMess)
 	cmd = fmt.Sprintf("mkdir -p %s", targetDir)
         _, err := SshRun(user, keyFile, host, port, cmd)
         if err != nil {
@@ -259,29 +259,28 @@ func UploadDir(user string, keyFile string, host string, port int, sourceDir str
             panic(err)
         }
         infoMess = fmt.Sprintf("Create folder [%s] on [%s:%d]", targetDir, host, port)
-        Log("WARN", infoMess)
+        Log("DEBUG", infoMess)
     }
 
     sshConfig, err := NewConfig(keyFile, user)
     if err != nil {
         infoMess = fmt.Sprintf(`Error in upload dir, failed to get the ssh config :user = %s, 
-	                                          keyFile = %s
-						  host = %s
-						  port = %d
-						  sourceDir = %s
-						  targetDir = %s
-						  error = %v`, user, keyFile, host, port, sourceDir, targetDir, err)
+                                        keyFile = %s
+                                        host = %s
+                                        port = %d
+                                        sourceDir = %s
+                                        targetDir = %s
+                                        error = %v`, user, keyFile, host, port, sourceDir, targetDir, err)
     }
     sftpClient, err := sftpConnect(sshConfig, host, port)
     if err != nil {
         infoMess = fmt.Sprintf(`Error in upload dir[sftp client]: user = %s
-                                                                  keyFile = %s
-                                                                  host = %s
-                                                                  port = %d
-                                                                  sourceDir = %s
-                                                                  targetDir = %s
-								  error = %v`,
-                                user, keyFile, host, port, sourceDir, targetDir, err)
+                                        keyFile = %s
+                                        host = %s
+                                        port = %d
+                                        sourceDir = %s
+                                        targetDir = %s
+                                        error = %v`, user, keyFile, host, port, sourceDir, targetDir, err)
         Log("ERROR", infoMess)
 	panic(err)
     }
@@ -289,13 +288,12 @@ func UploadDir(user string, keyFile string, host string, port int, sourceDir str
     err = uploadDirectory(sftpClient, sourceDir, targetDir)
     if err != nil {
         infoMess = fmt.Sprintf(`Error in upload dir[upload dir]: user = %s
-                                                                  keyFile = %s
-                                                                  host = %s
-                                                                  port = %d
-                                                                  sourceDir = %s
-                                                                  targetDir = %s
-								  error = %v`,
-                                user, keyFile, host, port, sourceDir, targetDir, err)
+                                        keyFile = %s
+                                        host = %s
+                                        port = %d
+                                        sourceDir = %s
+                                        targetDir = %s
+                                        error = %v`, user, keyFile, host, port, sourceDir, targetDir, err)
         Log("ERROR", infoMess)
 	panic(err)
     }

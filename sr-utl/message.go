@@ -14,7 +14,7 @@ LogLevel
 - ERROR     40
 
 */
-var GLOGLEVEL string = "DEBUG"
+var GLOGLEVEL string = "INFO"
 
 
 func Log(logLevel string, mess string) {
@@ -39,8 +39,7 @@ func Log(logLevel string, mess string) {
             }
 	default:
 	    fmt.Printf("[\x1b[47;30m%s\x1b[0m\x1b[43;30m%8s\x1b[0m] %s\n", dt, logLevel, mess)
-    
-    } 
+    }
     //fmt.Printf("%s   %8s %15s  %s\n", dt, logLevel, process, mess)
     //fmt.Printf("[\x1b[47;30m%s\x1b[0m\x1b[43;30m%8s\x1b[0m] %s\n", dt, logLevel, mess)
 

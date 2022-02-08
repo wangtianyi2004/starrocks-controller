@@ -34,18 +34,18 @@ fe_servers:
     priority_networks: 192.168.230.0/24
     config:
       sys_log_delete_age: "2d"
-#  - host: 192.168.230.43
-#    ssh_port: 22
-#    http_port: 8030
-#    rpc_port: 9020
-#    query_port: 9030
-#    edit_log_port: 9010
-#    deploy_dir: /opt/starrocks/fe
-#    meta_dir: /data/starrocks/fe/meta
-#    log_dir: /opt/starrocks/fe/log
-#    priority_networks: 192.168.230.0/24
-#    config:
-#      sys_log_delete_age: "3d"
+  - host: 192.168.230.43
+    ssh_port: 22
+    http_port: 8030
+    rpc_port: 9020
+    query_port: 9030
+    edit_log_port: 9010
+    deploy_dir: /opt/starrocks/fe
+    meta_dir: /data/starrocks/fe/meta
+    log_dir: /opt/starrocks/fe/log
+    priority_networks: 192.168.230.0/24
+    config:
+      sys_log_delete_age: "3d"
 
 be_servers:
   - host: 192.168.230.41

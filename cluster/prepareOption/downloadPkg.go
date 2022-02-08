@@ -9,6 +9,19 @@ import (
 
 
 
+func PrepareSRPkg() {
+
+    var infoMess string
+
+    infoMess = "Download StarRocks package & jdk ..."
+    utl.Log("OUTPUT", infoMess)
+    DownloadSRPkg()
+
+    infoMess = "Decompress StarRocks pakcage & jdk ..."
+    utl.Log("OUTPUT", infoMess)
+    DecompressSRPkg()
+}
+
 func DownloadSRPkg() {
 
 

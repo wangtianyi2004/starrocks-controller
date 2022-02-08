@@ -22,7 +22,7 @@ func MkDir(dirPath string) {
         }
     } else {
         mess = "Detect the folder [" + dirPath + "] exists"
-        Log("INFO", mess)
+        Log("DEBUG", mess)
     }
 }
 

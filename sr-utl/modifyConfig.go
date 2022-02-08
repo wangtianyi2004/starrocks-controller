@@ -114,8 +114,8 @@ func AppendConfig(fileName string, configKey string, configValue string) (err er
 	Log("ERROR", infoMess)
     }
 
-    infoMess = fmt.Sprintf("Append configuration [fileName = %s, configStr= %s]", fileName, configStr)
-    Log("INFO", infoMess)
+    infoMess = fmt.Sprintf("Append configuration [fileName = %s, configStr= %s]", fileName, strings.Replace(configStr, "\n", "", -1))
+    Log("DEBUG", infoMess)
 
     return nil
 

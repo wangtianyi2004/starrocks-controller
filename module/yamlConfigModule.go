@@ -8,9 +8,12 @@ import (
     "os"
 )
 
-var GYamlConf   *ConfStruct
-var GSshKeyRsa   string
-var GSRCtlRoot   string
+var GYamlConf          *ConfStruct
+var GYamlConfAppend    *ConfStruct
+var GSshKeyRsa         string
+var GSRCtlRoot         string
+
+
 type ConfStruct struct {
     Global struct {
         User        string         `yaml:"user"`
@@ -90,11 +93,10 @@ func (cc *ConfStruct) GetConf(fileName string) *ConfStruct {
 }
 
 func InitConf(fileName string) {
-    var confS ConfStruct 
+    var confS ConfStruct
     GYamlConf = confS.GetConf(fileName)
-    GSshKeyRsa = "/root/.ssh/id_rsa"
 
-    
+    GSshKeyRsa = "/root/.ssh/id_rsa"
     GSRCtlRoot = os.Getenv("SRCTLROOT")
     if GSRCtlRoot == "" {
         if GYamlConf.Global.User == "root" {
@@ -104,8 +106,51 @@ func InitConf(fileName string) {
         }
     }
 
-    
 }
+
+
+
+func AppendConf(fileName string) {
+    var confS ConfStruct
+    GYamlConfAppend = confS.GetConf(fileName)
+}
+
+
+/*
+func PrintConfig(cc *ConfStruct) {
+
+
+
+    fmt.Println(cc.FeServers[0])
+
+    var c1 ConfStruct.FeServers
+
+    fmt.Println("################################################################################################################")
+    //fmt.Println(string(d))
+    
+    configFile := "/tmp/aaatest.conf"
+    file, err := os.OpenFile(configFile, os.ORDWR, 0644)
+    if err != nil {
+        return err
+    }
+    defer file.Close()
+
+    _, err = file.WriteString(string(d))
+    if err != nil {
+        return err
+    }
+
+    err = file.Sync()
+    if err != nil {
+        return err
+    }
+
+    return nil
+    
+
+
+}
+*/
 
 func TestParseYamlConfig(fileName string) {
 

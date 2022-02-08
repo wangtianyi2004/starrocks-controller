@@ -28,7 +28,10 @@ func RunSQL(userName string, password string, ip string, port int, dbName string
 
     rows, err = DB.Query(sqlStat)
     if err != nil{
-        infoMess = fmt.Sprintf("Error in run sql [dbPath = %s, SQL = %s], error = %v", dbPath, sqlStat, err)
+        infoMess = fmt.Sprintf(`Error in run sql: 
+                                        dbPath = %s
+                                        SQL = %s
+                                        error = %v`, dbPath, sqlStat, err)
 	Log("ERROR", infoMess)
 	return nil, err
     }

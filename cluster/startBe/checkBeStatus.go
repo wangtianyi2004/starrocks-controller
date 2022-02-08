@@ -3,7 +3,7 @@ package startBe
 import(
     "fmt"
     "strings"
-    //"strconv"
+    "strconv"
     "sr-controller/sr-utl"
     "sr-controller/module"
     "database/sql"
@@ -18,21 +18,21 @@ type BeStatusStruct struct{
     BePort                   int
     HttpPort                 int
     BrpcPort                 int
-    LastStartTime            string
-    LastHeartbeat            string
+    LastStartTime            sql.NullString
+    LastHeartbeat            sql.NullString
     Alive                    bool
     SystemDecommissioned     bool
     ClusterDecommissioned    bool
     TabletNum                int
     DataUsedCapacity         string
     AvailCapacity            string
-    TotalCapacity            float64
+    TotalCapacity            sql.NullString
     UsedPct                  string
     MaxDiskUsedPct           string
     ErrMsg                   sql.NullString
     Version                  sql.NullString
     Status                   sql.NullString
-    DataTotalCapacity        float64
+    DataTotalCapacity        sql.NullString
     DataUsedPct              sql.NullString
 
 }
@@ -45,7 +45,7 @@ func CheckBeStatus(user string, keyRsa string, sshHost string, sshPort int, hear
     cmd := fmt.Sprintf("netstat -nltp | grep ':%d '", heartbeatServicePort)
     output, err := utl.SshRun(user, keyRsa, sshHost, sshPort, cmd)
 
-    if strings.Contains(string(output), ": " + string(heartbeatServicePort)) {
+    if strings.Contains(string(output), ":" + strconv.Itoa(heartbeatServicePort)) {
         infoMess = fmt.Sprintf("Check the be heartbeat service port %s:%d run successfully", sshHost, heartbeatServicePort)
         utl.Log("INFO", infoMess)
     }

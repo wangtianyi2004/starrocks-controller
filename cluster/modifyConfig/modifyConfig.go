@@ -12,6 +12,9 @@ func ModifyClusterConfig() {
     var tmpConfigValue string
     var tmpUser string = module.GYamlConf.Global.User
     var tmpKeyFile string = "/root/.ssh/id_rsa"
+
+    infoMess = "Modify configuration for FE nodes & BE nodes ..."
+    utl.Log("OUTPUT", infoMess)
     // modify FE config
     for i := 0; i < len(module.GYamlConf.FeServers); i++ {
 
@@ -102,7 +105,7 @@ func appendConfig(configFile string, configKey string, configValue string) {
         panic(err)
     }
     infoMess = fmt.Sprintf("Append new configuration to tmp config file [configFile = %s, configKey = %s, configValue = %s]", configFile, configKey, configValue)
-    utl.Log("INFO", infoMess)
+    utl.Log("DEBUG", infoMess)
 
 }
 
