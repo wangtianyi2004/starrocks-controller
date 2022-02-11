@@ -1,0 +1,82 @@
+package utl
+
+import (
+    "os/exec"
+    "fmt"
+    "golang.org/x/crypto/ssh"
+    "io/ioutil"
+)
+
+// Run local shell command
+func RunShellScript(scriptName string) string {
+    var errmess string
+    cmd := exec.Command("/bin/bash", "-c", scriptName)
+    res, err := cmd.Output()
+    if err != nil {
+        errmess = fmt.Sprint("Error in run command [ %s ]", scriptName)
+	Log("ERROR", errmess)
+        panic(err)
+    }
+    //fmt.Println(string(res))
+    return string(res)
+}
+
+// Run ssh shell command
+
+
+func NewConfig(keyFile string, user string)(config *ssh.ClientConfig, err error) {
+
+    var errmess string
+
+    key, err := ioutil.ReadFile(keyFile)
+    if err != nil {
+        errmess = fmt.Sprint("unable to read private key: %v", err)
+        Log("ERROR", errmess)
+        return
+    }
+
+    signer, err := ssh.ParsePrivateKey(key)
+    if err != nil {
+        errmess = fmt.Sprint("unable to parse private key: %v", err)
+        Log("ERROR", errmess)
+        return
+    }
+
+    config = &ssh.ClientConfig{
+        User: user,
+        Auth: []ssh.AuthMethod{
+            ssh.PublicKeys(signer),
+        },
+        HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+    }
+    return
+
+}
+
+func SshRun(config *ssh.ClientConfig, host string, port int, command string) (outPut []byte, err error) {
+
+    var errmess string
+    client, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", host, port), config)
+    if err != nil {
+        errmess = fmt.Sprint("unable to connect: %s error %v", host, err)
+        Log("ERROR", errmess)
+        return
+    }
+    defer client.Close()
+
+    session, err := client.NewSession()
+    if err != nil{
+        errmess = fmt.Sprint("ssh new session error %v", err)
+        Log("ERROR", errmess)
+        return
+    }
+    defer session.Close()
+
+    outPut, err = session.CombinedOutput(command)
+    if err != nil{
+        errmess = fmt.Sprint("run command %s on host %s error %v", command, host, err)
+        Log("ERROR", errmess)
+    }
+
+    return
+}
