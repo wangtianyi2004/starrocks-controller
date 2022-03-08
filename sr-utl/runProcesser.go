@@ -15,7 +15,6 @@ func RunShellScript(scriptName string) string {
 	Log("ERROR", errmess)
         panic(err)
     }
-    //fmt.Println(string(res))
     return string(res)
 }
 

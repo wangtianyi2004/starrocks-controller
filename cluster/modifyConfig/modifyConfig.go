@@ -22,7 +22,7 @@ func ModifyTest() {
     configMap["edit_log_port"] = strconv.Itoa(module.GYamlConf.FeServers[i].EditLogPort)
     fmt.Printf("%s:%d\n", "http_port", module.GYamlConf.FeServers[i].HttpPort)
     fmt.Printf("%s:%d\n", "rpc_port", module.GYamlConf.FeServers[i].RpcPort)
-    fmt.Println("#########################################################################")
+    fmt.Println("[TEST] #########################################################################")
     for key, val := range configMap {
 	    fmt.Printf("key:%s\tvalue:%s\n", key, val)
     }
@@ -31,7 +31,7 @@ func ModifyTest() {
     for k, v := range module.GYamlConf.FeServers[i].Config {
         fmt.Printf("%s:%s\n", k, v)
     }
-    //fmt.Println(module.GYamlConf.FeServers[i].Config)
+    //fmt.Println("[TEST]", module.GYamlConf.FeServers[i].Config)
 
 }
 
@@ -42,7 +42,7 @@ func ModifyClusterConfig() {
     //var tmpConfigKey string
     //var tmpConfigValue string
     var tmpUser string = module.GYamlConf.Global.User
-    var tmpKeyFile string = "/root/.ssh/id_rsa"
+    var tmpKeyFile string = module.GSshKeyRsa
     var configMap map[string] string
 
     infoMess = "Modify configuration for FE nodes & BE nodes ..."

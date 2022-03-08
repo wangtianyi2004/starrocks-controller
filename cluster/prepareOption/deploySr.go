@@ -19,7 +19,7 @@ func DistributeSrDir() {
     utl.Log("OUTPUT", infoMess)
     DistributeBeDir()
 
-    module.WriteBackMeta(module.GYamlConf, module.GWriteBackMeta)
+    module.WriteBackMeta(module.GYamlConf, module.GWriteBackMetaPath)
 
 }
 
@@ -31,21 +31,9 @@ func DistributeFeDir() {
     for i := 0; i < len(module.GYamlConf.FeServers); i++ {
 
         sshUser := module.GYamlConf.Global.User
-        rsaKey := "/root/.ssh/id_rsa"
+        rsaKey := module.GSshKeyRsa
         sshPort := module.GYamlConf.FeServers[i].SshPort
         sshHost := module.GYamlConf.FeServers[i].Host
-
-/*
-        fmt.Println("sshPort: ", sshPort)
-        fmt.Println("rsaKey: ", rsaKey)
-        fmt.Println("user: ", sshUser)
-        fmt.Println("sshHost: ", sshHost)
-        fmt.Println("feSourceDir: ", feSourceDir)
-        fmt.Println("feTargetDir", feTargetDir)
-        fmt.Println("jdkSourceDir: ", jdkSourceDir)
-        fmt.Println("jdkTargetDir", jdkTargetDir)
-*/
-
 
         //utl.UploadDir(user string, keyFile string, host string, port int, sourceDir string, targetDir string)
         // upload fe dir
@@ -85,22 +73,12 @@ func DistributeBeDir() {
     for i := 0; i < len(module.GYamlConf.BeServers); i++ {
 
 	sshUser := module.GYamlConf.Global.User
-	rsaKey := "/root/.ssh/id_rsa"
+	rsaKey := module.GSshKeyRsa
 	sshPort := module.GYamlConf.BeServers[i].SshPort
 	sshHost := module.GYamlConf.BeServers[i].Host
 	beSourceDir := fmt.Sprintf("%s/download/StarRocks-2.0.1/be", module.GSRCtlRoot)
 	beTargetDir := module.GYamlConf.BeServers[i].DeployDir
 
-/*
-	fmt.Println("sshPort: ", sshPort)
-	fmt.Println("rsaKey: ", rsaKey)
-	fmt.Println("user: ", sshUser)
-	fmt.Println("sshHost: ", sshHost)
-	fmt.Println("feSourceDir: ", feSourceDir)
-	fmt.Println("feTargetDir", feTargetDir)
-	fmt.Println("jdkSourceDir: ", jdkSourceDir)
-        fmt.Println("jdkTargetDir", jdkTargetDir)
-*/
 	//utl.UploadDir(user string, keyFile string, host string, port int, sourceDir string, targetDir string)
 	utl.UploadDir(sshUser, rsaKey, sshHost, sshPort, beSourceDir, beTargetDir)
 	infoMess = fmt.Sprintf("Upload dir BeSourceDir = [%s] to BeTargetDir = [%s] on BeHost = [%s]", beSourceDir, beTargetDir, sshHost)
@@ -123,13 +101,7 @@ func modifyJavaHome(sshUser string, rsaKey string, host string, sshPort int, sta
 
     _, err = utl.SshRun(sshUser, rsaKey, host, sshPort, cmd)
     if err != nil {
-        infoMess = fmt.Sprintf(`Error in modify JAVA_HOME:
-                       sshUser = %s
-                       rsaKey = %s
-                       host = %s
-                       port = %d
-                       cmd = %s`,
-                  sshUser, rsaKey, host, sshPort, cmd)
+        infoMess = fmt.Sprintf("Error in modify JAVA_HOME. [FeHost = %s, cmd = %s, Error = %v]", host, cmd, err)
         utl.Log("ERROR", infoMess)
         panic(err)
     }

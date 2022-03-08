@@ -40,41 +40,53 @@ type BeStatusStruct struct{
 
 var GBeStatArr []BeStatusStruct
 
-func CheckBeStatus(beId int, user string, keyRsa string, sshHost string, sshPort int, heartbeatServicePort int) (beStat BeStatusStruct, err error) {
+func CheckBePortStatus(beId int) (checkPortRes bool, err error) {
+
+    var infoMess string
+
+    tmpUser := module.GYamlConf.Global.User
+    tmpKeyRsa := module.GSshKeyRsa
+    tmpBeHost := module.GYamlConf.BeServers[beId].Host
+    tmpSshPort := module.GYamlConf.BeServers[beId].SshPort
+    tmpHeartbeatServicePort := module.GYamlConf.BeServers[beId].HeartbeatServicePort
+    checkCMD := fmt.Sprintf("netstat -nltp | grep ':%d '", tmpHeartbeatServicePort)
+
+    output, err := utl.SshRun(tmpUser, tmpKeyRsa, tmpBeHost, tmpSshPort, checkCMD)
+
+    if err != nil {
+        infoMess = fmt.Sprintf("Error in run cmd when check BE port status [BeHost = %s, error = %v]", tmpBeHost, err)
+        utl.Log("DEBUG", infoMess)
+        return false, err
+    }
+
+    if strings.Contains(string(output), ":" + strconv.Itoa(tmpHeartbeatServicePort)) {
+        infoMess = fmt.Sprintf("Check the BE query port %s:%d run successfully", tmpBeHost, tmpHeartbeatServicePort)
+        utl.Log("DEBUG", infoMess)
+        return true, nil
+    }
+
+    return false, err
+}
+
+
+func GetBeStatJDBC(beId int) (beStat BeStatusStruct, err error) {
 
     var infoMess string
     var tmpBeStat BeStatusStruct
-    // check port stat by [netstat -nltp | grep 9050]
-    cmd := fmt.Sprintf("netstat -nltp | grep ':%d '", heartbeatServicePort)
-    output, err := utl.SshRun(user, keyRsa, sshHost, sshPort, cmd)
+    //GJdbcUser = "root"
+    //GJdbcPasswd = ""
+    //GJdbcDb = ""
+    queryCMD := "show backends"
+    tmpBeHost := module.GYamlConf.BeServers[beId].Host
+    tmpHeartbeatServicePort := module.GYamlConf.BeServers[beId].HeartbeatServicePort
 
-    if strings.Contains(string(output), ":" + strconv.Itoa(heartbeatServicePort)) {
-        infoMess = fmt.Sprintf("Check the be heartbeat service port %s:%d run successfully", sshHost, heartbeatServicePort)
-        utl.Log("INFO", infoMess)
-    }
-
-    // check be status by jdbc (from the master fe node)
-    //RunSQL(userName string, password string, ip string, port int, dbName string, sqlStat string)(rows *sql.Rows, err error)
-    feMasterUserName := "root"
-    feMasterPassword := ""
-    feMasterIP := module.GYamlConf.FeServers[0].Host
-    feMasterQueryPort := module.GYamlConf.FeServers[0].QueryPort
-    feMasterDbName := ""
-    sqlStat := "show backends"
-    rows, err := utl.RunSQL(feMasterUserName, feMasterPassword, feMasterIP, feMasterQueryPort, feMasterDbName, sqlStat)
-
+    rows, err := utl.RunSQL(module.GJdbcUser, module.GJdbcPasswd, module.GFeEntryHost, module.GFeEntryPort, module.GJdbcDb, queryCMD)
     if err != nil{
-        infoMess = fmt.Sprintf(`Error in run sql when check be status:
-              feUserName = %s
-              fePassword = %s
-              feIP = %s
-              queryPort = %d
-              dbName = %s
-              sqlStat = %s]
-              error = %v`, feMasterUserName, feMasterPassword, feMasterIP, feMasterQueryPort, feMasterDbName, sqlStat, err)
-        utl.Log("ERROR", infoMess)
+        infoMess = fmt.Sprintf("Error in run sql when check BE status: [BeHost = %s, error = %v]", tmpBeHost, err)
+        utl.Log("DEBUG", infoMess)
         return beStat, err
     }
+
 
     for rows.Next(){
         err = rows.Scan(  &tmpBeStat.BackendId,
@@ -101,25 +113,33 @@ func CheckBeStatus(beId int, user string, keyRsa string, sshHost string, sshPort
                           &tmpBeStat.DataTotalCapacity,
                           &tmpBeStat.DataUsedPct)
         if err != nil {
-            infoMess = fmt.Sprintf(`Error in scan sql result:
-                         feUserName = %s
-                         fePassword = %s
-                         feIP = %s
-                         queryPort = %d
-                         dbName = %s
-                         sqlStat = %s]
-                         error = %v`,
-                     feMasterUserName, feMasterPassword, feMasterIP, feMasterQueryPort, feMasterDbName, sqlStat, err)
-            utl.Log("ERROR", infoMess)
+            infoMess = fmt.Sprintf("Error in scan sql result [BeHost = %s, error = %v]", tmpBeHost, err)
+            utl.Log("DEBUG", infoMess)
             return beStat, err
         }
 
-        if beStat.IP == sshHost && beStat.HeartbeatServicePort == heartbeatServicePort {
+        if string(tmpBeStat.IP) == tmpBeHost && tmpBeStat.HeartbeatServicePort == tmpHeartbeatServicePort {
             beStat = tmpBeStat
-            GBeStatArr[beId] = beStat
+            //GFeStatusArr[feId] = feStat
             return beStat, nil
         }
     }
-    return beStat,nil
+
+    return beStat, err
 }
+
+
+func CheckBeStatus(beId int) (beStat BeStatusStruct, err error) {
+
+    var bePortRun   bool
+    bePortRun, err = CheckBePortStatus(beId)
+
+    if bePortRun {
+        beStat, err = GetBeStatJDBC(beId)
+    }
+
+    return beStat, err
+}
+
+
 

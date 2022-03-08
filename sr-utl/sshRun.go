@@ -307,15 +307,15 @@ func TestUploadDir() {
 
     // check targetDir exist
     output, err := SshRun("root", "/root/.ssh/id_rsa",  "192.168.230.41", 22, "ls /opt/starrocks/fe/jdk")
-    fmt.Printf("The result of [ls /opt/starrocks/fe/jdk] on 192.168.230.41:22 ---- output = %s, error = %v\n", output, err)
+    fmt.Printf("[TEST] The result of [ls /opt/starrocks/fe/jdk] on 192.168.230.41:22 ---- output = %s, error = %v\n", output, err)
 
     if err != nil {
-	fmt.Println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        fmt.Println("The target dir [/opt/starrocks/fe/jdk] doesn't exist on [192.168.230.41].")
+	fmt.Println("[TEST] XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        fmt.Println("[TEST] The target dir [/opt/starrocks/fe/jdk] doesn't exist on [192.168.230.41].")
         _, err := SshRun("root", "/root/.ssh/id_rsa", "192.168.230.41", 22, "mkdir -p /opt/starrocks/fe/jdk")
 
 	if err != nil {
-	    fmt.Println("Error in create folder [/opt/starrocks/fe/jdk] on [192.168.230.41]")
+	    fmt.Println("[TEST] Error in create folder [/opt/starrocks/fe/jdk] on [192.168.230.41]")
 	    panic(err)
 	}
 

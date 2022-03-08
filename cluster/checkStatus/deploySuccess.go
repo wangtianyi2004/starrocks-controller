@@ -2,16 +2,13 @@ package checkStatus
 
 import(
     "fmt"
-    "sr-controller/sr-utl"
 )
 
 func DeploySuccess() {
 
-    var infoMess string
 
-    infoMess = fmt.Sprintf("恭喜你，这么多的 bug 还能部署成功。")
-    utl.Log("OUTPUT", infoMess)
-    infoMess = fmt.Sprintf("四百多个异常捕获都没有捕获到你的芳心。RESPECT")
-    utl.Log("OUTPUT", infoMess)
-    
+    fmt.Printf(`旅行者，当你重新踏上旅途之后，一定要记得旅途本身的意义。
+提瓦特的飞鸟、诗和城邦，女皇、愚人和怪物 ... 都是你旅途的一部分。
+终点并不意味着一切，在抵达终点之前，用你的眼睛，多多观察这个世界吧 ...
+REPEST OPENSOURCE ......\n`)
 }

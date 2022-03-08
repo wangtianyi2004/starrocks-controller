@@ -1,0 +1,16 @@
+package clusterOption
+
+import(
+    "sr-controller/cluster/stopCluster"
+    "sr-controller/module"
+    "sr-controller/cluster/checkStatus"
+)
+
+func Stop(clusterName string) {
+
+    module.InitConf(clusterName, "")
+
+    stopCluster.StopFeCluster(clusterName)
+    stopCluster.StopBeCluster(clusterName)
+}
+

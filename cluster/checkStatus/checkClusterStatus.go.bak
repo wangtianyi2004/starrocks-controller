@@ -1,6 +1,0 @@
-package checkStatus
-
-import(
-    "sr-controller/sr-utl"
-)
-

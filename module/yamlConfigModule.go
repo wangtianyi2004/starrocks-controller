@@ -6,24 +6,46 @@ import (
     "gopkg.in/yaml.v2"
     "fmt"
     "os"
+    "os/user"
+    "time"
+    "strings"
     "sr-controller/sr-utl"
 )
 
-var GYamlConf          *ConfStruct
-var GYamlConfAppend    *ConfStruct
-var GSshKeyRsa         string
-var GSRCtlRoot         string
-var GWriteBackMeta     string
+
+
+const NULLSTR = ""
+
+var GClusterName           string
+var GYamlConf              *ConfStruct
+var GYamlConfAppend        *ConfStruct
+var GSshKeyRsa             string
+var GSRCtlRoot             string
+var GWriteBackMetaPath     string
+var GJdbcUser              string
+var GJdbcPasswd            string
+var GJdbcDb                string
+var GFeEntryHost           string
+var GFeEntryPort           int
+
 
 type ConfStruct struct {
+
+    ClusterInfo struct {
+        User                  string                 `yaml:"user"`
+	CreateDate            string                 `yaml:"create_date"`
+	MetaPath              string                 `yaml:"meta_path"`
+        PrivateKey            string                 `yaml:"private_key"`
+    }
+
     Global struct {
-        User        string         `yaml:"user"`
-        SshPort     int            `yaml:ssh_port`
+        User                  string                 `yaml:"user"`
+        SshPort               int                    `yaml:"ssh_port"`
     } `yaml:"global"`
 
     ServerConfig struct {
-        Fe            map[string]string `yaml:"fe"`
-        Be            map[string]string `yaml:"be"`
+        Fe                    map[string]string      `yaml:"fe"`
+        Be                    map[string]string      `yaml:"be"`
     } `yaml:"server_configs"`
 
     FeServers []struct {
@@ -93,19 +115,38 @@ func (cc *ConfStruct) GetConf(fileName string) *ConfStruct {
     return cc
 }
 
-func InitConf(fileName string) {
-    var confS ConfStruct
-    GYamlConf = confS.GetConf(fileName)
 
-    GSshKeyRsa = "/root/.ssh/id_rsa"
-    GWriteBackMeta = "/tmp/c1-meta.yaml"
+
+
+func InitConf(clusterName string, fileName string) {
+
+
+    var confS ConfStruct
+
+    // get home dir & ssh auth key
+    osUser, _ := user.Current()
+    GSshKeyRsa = fmt.Sprintf("%s/.ssh/id_rsa", osUser.HomeDir)
+
+    // get sr-ctl root dir
     GSRCtlRoot = os.Getenv("SRCTLROOT")
     if GSRCtlRoot == "" {
-        if GYamlConf.Global.User == "root" {
-            GSRCtlRoot = "/root/.starrocks-controller"
-        } else {
-            GSRCtlRoot = fmt.Sprintf("/home/%s/.starrocks-controller", GYamlConf.Global.User) 
-        }
+        GSRCtlRoot = fmt.Sprintf("%s/.starrocks-controller", osUser.HomeDir)
+    }
+
+    // get the write back meta path
+    GClusterName = clusterName
+    GWriteBackMetaPath = fmt.Sprintf("%s/cluster/%s", GSRCtlRoot, GClusterName)
+
+    // get the FE jdbc connection parameters
+    GJdbcUser = "root"
+    GJdbcPasswd = ""
+    GJdbcDb = ""
+
+    // parse config yaml file
+    if fileName == "" {
+        GYamlConf = confS.GetConf(GWriteBackMetaPath + "/meta.yaml")
+    } else {
+        GYamlConf = confS.GetConf(fileName)
     }
 
 }
@@ -120,27 +161,41 @@ func AppendConf(fileName string) {
 
 
 
-func WriteBackMeta(cc *ConfStruct, metaFileName string) {
+func WriteBackMeta(cc *ConfStruct, metaFilePath string) {
 
-    var infoMess string
-
+    var infoMess       string
+    var metaFileName   string
     // check the metaFile exist, if the file doesn't exist, create a new one. 
-    _, err := os.Stat(metaFileName)
+    metaFileName = metaFilePath + "/meta.yaml"
+    _ = os.MkdirAll(metaFilePath, 0666)
+    _, err := os.Create(metaFileName)
     if err != nil {
-        _, err = os.Create(metaFileName)
-	if err != nil {
-	    infoMess = fmt.Sprintf("Error in create the meta file [fileName = %s]", metaFileName)
-	    utl.Log("ERROR", infoMess)
-	}
+        infoMess = fmt.Sprintf("Error in create the meta file [fileName = %s]", metaFileName)
+        utl.Log("ERROR", infoMess)
     }
 
     metaF, err := os.OpenFile(metaFileName, os.O_RDWR, 0644)
     if err != nil {
         infoMess = fmt.Sprintf("Error in opening write-back meta file [fileName = %s]", metaFileName)
 	utl.Log("ERROR", infoMess)
-	panic(err)
+        clusterNameArr := strings.Split(metaFilePath, "/")
+	clusterName := clusterNameArr[len(clusterNameArr)-1]
+	infoMess = fmt.Sprintf(`You can shoot the trouble as bellowing step:
+	        1. check the meta file status [fileName = %s]
+		2. check the cluster name you input [clusterName = %s]
+		3. check the os env $SRCTLROOT, if you don't set this env variable, please check the ~/.starrocks-controller folder
+	`, metaFileName, clusterName)
+	// panic(err)
     }
     defer metaF.Close()
+
+
+
+    // write back cluster info
+    cc.ClusterInfo.User = GYamlConf.Global.User
+    cc.ClusterInfo.CreateDate = time.Unix(time.Now().Unix(), 0,).Format("2006-01-02 15:04:05")
+    cc.ClusterInfo.MetaPath = GWriteBackMetaPath
+    cc.ClusterInfo.PrivateKey = GSshKeyRsa
 
     yamlStr, err := yaml.Marshal(cc)
     if err != nil {
@@ -155,41 +210,14 @@ func WriteBackMeta(cc *ConfStruct, metaFileName string) {
     }
 
 }
-/*
-func PrintConfig(cc *ConfStruct) {
 
 
-
-    fmt.Println(cc.FeServers[0])
-
-    var c1 ConfStruct.FeServers
-
-    fmt.Println("################################################################################################################")
-    //fmt.Println(string(d))
-    
-    configFile := "/tmp/aaatest.conf"
-    file, err := os.OpenFile(configFile, os.ORDWR, 0644)
-    if err != nil {
-        return err
-    }
-    defer file.Close()
-
-    _, err = file.WriteString(string(d))
-    if err != nil {
-        return err
-    }
-
-    err = file.Sync()
-    if err != nil {
-        return err
-    }
-
-    return nil
-    
-
-
+func SetFeEntry(host string, port int) {
+    GFeEntryHost = host
+    GFeEntryPort = port
 }
-*/
+
+
 
 func TestParseYamlConfig(fileName string) {
 
@@ -198,67 +226,67 @@ func TestParseYamlConfig(fileName string) {
     yamlConf := confS.GetConf(fileName)
 
     // Print configuration
-    fmt.Println(">>>>>>>>", yamlConf)
-    fmt.Println("######################### GLOBAL #########################")
-    fmt.Println("Global -> User: ", yamlConf.Global.User)
-    fmt.Println("Global -> ssh_port: ", yamlConf.Global.SshPort)
-    fmt.Println("######################### SERVER CONFIG #########################")
-    fmt.Println("ServerConfig -> FE -> sys_log_level: ", yamlConf.ServerConfig.Fe["sys_log_level"])
-    fmt.Println("ServerConfig -> FE -> fe_sys_log_1: ", yamlConf.ServerConfig.Fe["fe_sys_log_1"])
-    fmt.Println("ServerConfig -> BE -> sys_log_level: ", yamlConf.ServerConfig.Be["sys_log_level"])
-    fmt.Println("ServerConfig -> BE -> sys_log_level: ", yamlConf.ServerConfig.Be["be_sys_log_2"])
-    fmt.Println("######################### FE SERVER #########################")
+    fmt.Println("[TEST] >>>>>>>>", yamlConf)
+    fmt.Println("[TEST] ######################### GLOBAL #########################")
+    fmt.Println("[TEST] Global -> User: %s\n", yamlConf.Global.User)
+    fmt.Println("[TEST] Global -> ssh_port: %s\n", yamlConf.Global.SshPort)
+    fmt.Println("[TEST] ######################### SERVER CONFIG #########################")
+    fmt.Println("[TEST] ServerConfig -> FE -> sys_log_level: ", yamlConf.ServerConfig.Fe["sys_log_level"])
+    fmt.Println("[TEST] ServerConfig -> FE -> fe_sys_log_1: ", yamlConf.ServerConfig.Fe["fe_sys_log_1"])
+    fmt.Println("[TEST] ServerConfig -> BE -> sys_log_level: ", yamlConf.ServerConfig.Be["sys_log_level"])
+    fmt.Println("[TEST] ServerConfig -> BE -> sys_log_level: ", yamlConf.ServerConfig.Be["be_sys_log_2"])
+    fmt.Println("[TEST] ######################### FE SERVER #########################")
     for i := 0; i < 3; i++ {
-        fmt.Printf("FeServer -> [%d] -> host:                             %s\n",     i, yamlConf.FeServers[i].Host)
-        fmt.Printf("FeServer -> [%d] -> ssh_port:                         %s\n",     i, yamlConf.FeServers[i].SshPort)
-        fmt.Printf("FeServer -> [%d] -> http_port:                        %s\n",     i, yamlConf.FeServers[i].HttpPort)
-        fmt.Printf("FeServer -> [%d] -> rpc_port:                         %s\n",     i, yamlConf.FeServers[i].RpcPort)
-        fmt.Printf("FeServer -> [%d] -> query_port:                       %s\n",     i, yamlConf.FeServers[i].QueryPort)
-        fmt.Printf("FeServer -> [%d] -> edit_log_port:                    %s\n",     i, yamlConf.FeServers[i].EditLogPort)
-        fmt.Printf("FeServer -> [%d] -> deploy_dir:                       %s\n",     i, yamlConf.FeServers[i].DeployDir)
-        fmt.Printf("FeServer -> [%d] -> meta_dir:                         %s\n",     i, yamlConf.FeServers[i].MetaDir)
-        fmt.Printf("FeServer -> [%d] -> log_dir:                          %s\n",     i, yamlConf.FeServers[i].LogDir)
-        fmt.Printf("FeServer -> [%d] -> priority_networks:                %s\n",     i, yamlConf.FeServers[i].PriorityNetworks)
-        fmt.Printf("FeServer -> [%d] -> config -> sys_log_level:          %s\n",     i, yamlConf.FeServers[i].Config["sys_log_level"])
-        fmt.Printf("FeServer -> [%d] -> config -> sys_log_delete_age:     %s\n",     i, yamlConf.FeServers[i].Config["sys_log_delete_age"])
+        fmt.Printf("[TEST] FeServer -> [%d] -> host:                             %s\n",     i, yamlConf.FeServers[i].Host)
+        fmt.Printf("[TEST] FeServer -> [%d] -> ssh_port:                         %s\n",     i, yamlConf.FeServers[i].SshPort)
+        fmt.Printf("[TEST] FeServer -> [%d] -> http_port:                        %s\n",     i, yamlConf.FeServers[i].HttpPort)
+        fmt.Printf("[TEST] FeServer -> [%d] -> rpc_port:                         %s\n",     i, yamlConf.FeServers[i].RpcPort)
+        fmt.Printf("[TEST] FeServer -> [%d] -> query_port:                       %s\n",     i, yamlConf.FeServers[i].QueryPort)
+        fmt.Printf("[TEST] FeServer -> [%d] -> edit_log_port:                    %s\n",     i, yamlConf.FeServers[i].EditLogPort)
+        fmt.Printf("[TEST] FeServer -> [%d] -> deploy_dir:                       %s\n",     i, yamlConf.FeServers[i].DeployDir)
+        fmt.Printf("[TEST] FeServer -> [%d] -> meta_dir:                         %s\n",     i, yamlConf.FeServers[i].MetaDir)
+        fmt.Printf("[TEST] FeServer -> [%d] -> log_dir:                          %s\n",     i, yamlConf.FeServers[i].LogDir)
+        fmt.Printf("[TEST] FeServer -> [%d] -> priority_networks:                %s\n",     i, yamlConf.FeServers[i].PriorityNetworks)
+        fmt.Printf("[TEST] FeServer -> [%d] -> config -> sys_log_level:          %s\n",     i, yamlConf.FeServers[i].Config["sys_log_level"])
+        fmt.Printf("[TEST] FeServer -> [%d] -> config -> sys_log_delete_age:     %s\n",     i, yamlConf.FeServers[i].Config["sys_log_delete_age"])
     }
 
-    fmt.Println("######################### BE SERVER #########################")
+    fmt.Println("[TEST] ######################### BE SERVER #########################")
     for i := 0; i < 3; i++ {
-        fmt.Printf("BeServer -> [%d] -> host:                             %s\n",     i, yamlConf.BeServers[i].Host)
-        fmt.Printf("BeServer -> [%d] -> ssh_port:                         %s\n",     i, yamlConf.BeServers[i].SshPort)
-        fmt.Printf("BeServer -> [%d] -> be_port:                          %s\n",     i, yamlConf.BeServers[i].BePort)
-        fmt.Printf("BeServer -> [%d] -> webserver_port:                   %s\n",     i, yamlConf.BeServers[i].WebServerPort)
-        fmt.Printf("BeServer -> [%d] -> heartbeat_service_port:           %s\n",     i, yamlConf.BeServers[i].HeartbeatServicePort)
-        fmt.Printf("BeServer -> [%d] -> deploy_dir:                       %s\n",     i, yamlConf.BeServers[i].DeployDir)
-        fmt.Printf("BeServer -> [%d] -> storage_dir:                      %s\n",     i, yamlConf.BeServers[i].StorageDir)
-        fmt.Printf("BeServer -> [%d] -> log_dir:                          %s\n",     i, yamlConf.BeServers[i].LogDir)
-        fmt.Printf("BeServer -> [%d] -> config -> sys_log_level:          %s\n",     i, yamlConf.BeServers[i].Config["create_tablet_worker_count"])
-        fmt.Printf("BeServer -> [%d] -> config -> sys_log_delete_age:     %s\n",     i, yamlConf.BeServers[i].Config["sys_log_delete_age"])
+        fmt.Printf("[TEST] BeServer -> [%d] -> host:                             %s\n",     i, yamlConf.BeServers[i].Host)
+        fmt.Printf("[TEST] BeServer -> [%d] -> ssh_port:                         %s\n",     i, yamlConf.BeServers[i].SshPort)
+        fmt.Printf("[TEST] BeServer -> [%d] -> be_port:                          %s\n",     i, yamlConf.BeServers[i].BePort)
+        fmt.Printf("[TEST] BeServer -> [%d] -> webserver_port:                   %s\n",     i, yamlConf.BeServers[i].WebServerPort)
+        fmt.Printf("[TEST] BeServer -> [%d] -> heartbeat_service_port:           %s\n",     i, yamlConf.BeServers[i].HeartbeatServicePort)
+        fmt.Printf("[TEST] BeServer -> [%d] -> deploy_dir:                       %s\n",     i, yamlConf.BeServers[i].DeployDir)
+        fmt.Printf("[TEST] BeServer -> [%d] -> storage_dir:                      %s\n",     i, yamlConf.BeServers[i].StorageDir)
+        fmt.Printf("[TEST] BeServer -> [%d] -> log_dir:                          %s\n",     i, yamlConf.BeServers[i].LogDir)
+        fmt.Printf("[TEST] BeServer -> [%d] -> config -> sys_log_level:          %s\n",     i, yamlConf.BeServers[i].Config["create_tablet_worker_count"])
+        fmt.Printf("[TEST] BeServer -> [%d] -> config -> sys_log_delete_age:     %s\n",     i, yamlConf.BeServers[i].Config["sys_log_delete_age"])
     }
 
-    fmt.Println("######################### PROMETHEUS SERVER #########################")
-    fmt.Println("PrometheusServer -> host: ",      yamlConf.PrometheusServer.Host)
-    fmt.Println("PrometheusServer -> ssh_port: ",      yamlConf.PrometheusServer.SshPort)
-    fmt.Println("PrometheusServer -> http_port: ",      yamlConf.PrometheusServer.HttpPort)
-    fmt.Println("PrometheusServer -> deploy_dir: ",      yamlConf.PrometheusServer.DeployDir)
-    fmt.Println("PrometheusServer -> data_dir: ",      yamlConf.PrometheusServer.DataDir)
-    fmt.Println("PrometheusServer -> log_dir: ",      yamlConf.PrometheusServer.LogDir)
+    fmt.Println("[TEST] ######################### PROMETHEUS SERVER #########################")
+    fmt.Println("[TEST] PrometheusServer -> host: ",      yamlConf.PrometheusServer.Host)
+    fmt.Println("[TEST] PrometheusServer -> ssh_port: ",      yamlConf.PrometheusServer.SshPort)
+    fmt.Println("[TEST] PrometheusServer -> http_port: ",      yamlConf.PrometheusServer.HttpPort)
+    fmt.Println("[TEST] PrometheusServer -> deploy_dir: ",      yamlConf.PrometheusServer.DeployDir)
+    fmt.Println("[TEST] PrometheusServer -> data_dir: ",      yamlConf.PrometheusServer.DataDir)
+    fmt.Println("[TEST] PrometheusServer -> log_dir: ",      yamlConf.PrometheusServer.LogDir)
 
-    fmt.Println("######################### GRAFANA SERVER #########################")
-    fmt.Println("GrafanaServer -> host: ",      yamlConf.GrafanaServer.Host)
-    fmt.Println("GrafanaServer -> ssh_port: ",      yamlConf.GrafanaServer.SshPort)
-    fmt.Println("GrafanaServer -> http_port: ",      yamlConf.GrafanaServer.HttpPort)
-    fmt.Println("GrafanaServer -> deploy_dir: ",      yamlConf.GrafanaServer.DeployDir)
+    fmt.Println("[TEST] ######################### GRAFANA SERVER #########################")
+    fmt.Println("[TEST] GrafanaServer -> host: ",      yamlConf.GrafanaServer.Host)
+    fmt.Println("[TEST] GrafanaServer -> ssh_port: ",      yamlConf.GrafanaServer.SshPort)
+    fmt.Println("[TEST] GrafanaServer -> http_port: ",      yamlConf.GrafanaServer.HttpPort)
+    fmt.Println("[TEST] GrafanaServer -> deploy_dir: ",      yamlConf.GrafanaServer.DeployDir)
 
-    fmt.Println("######################### ALERTMANAGER SERVER #########################")
-    fmt.Println("AlertManagerServer -> host: ",      yamlConf.AlertManagerServer.Host)
-    fmt.Println("AlertManagerServer -> ssh_port: ",      yamlConf.AlertManagerServer.SshPort)
-    fmt.Println("AlertManagerServer -> web_port: ",      yamlConf.AlertManagerServer.WebPort)
-    fmt.Println("AlertManagerServer -> cluster_port: ",      yamlConf.AlertManagerServer.ClusterPort)
-    fmt.Println("AlertManagerServer -> deploy_dir: ",      yamlConf.AlertManagerServer.DeployDir)
-    fmt.Println("AlertManagerServer -> data_dir: ",      yamlConf.AlertManagerServer.DataDir)
-    fmt.Println("AlertManagerServer -> log_dir: ",      yamlConf.AlertManagerServer.LogDir)
+    fmt.Println("[TEST] ######################### ALERTMANAGER SERVER #########################")
+    fmt.Println("[TEST] AlertManagerServer -> host: ",      yamlConf.AlertManagerServer.Host)
+    fmt.Println("[TEST] AlertManagerServer -> ssh_port: ",      yamlConf.AlertManagerServer.SshPort)
+    fmt.Println("[TEST] AlertManagerServer -> web_port: ",      yamlConf.AlertManagerServer.WebPort)
+    fmt.Println("[TEST] AlertManagerServer -> cluster_port: ",      yamlConf.AlertManagerServer.ClusterPort)
+    fmt.Println("[TEST] AlertManagerServer -> deploy_dir: ",      yamlConf.AlertManagerServer.DeployDir)
+    fmt.Println("[TEST] AlertManagerServer -> data_dir: ",      yamlConf.AlertManagerServer.DataDir)
+    fmt.Println("[TEST] AlertManagerServer -> log_dir: ",      yamlConf.AlertManagerServer.LogDir)
 
 
 }

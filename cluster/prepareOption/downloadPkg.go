@@ -32,7 +32,9 @@ func DownloadSRPkg() {
     downloadPath := module.GSRCtlRoot + "/download"
     downloadFile := "starrocks-2.0.1-quickstart.tar.gz"
     utl.DownloadFile(pkgUrl, downloadPath, downloadFile)
-    infoMess = fmt.Sprintf("这么大的文件，这么慢的网，费劲吧啦下载好了。跨过千山万水，来爱你，比心。")
+    //infoMess = fmt.Sprintf("这么大的文件，这么慢的网，费劲吧啦下载好了。跨过千山万水，来爱你，比心。")
+    // utl.Log("OUTPUT", infoMess)
+    infoMess = fmt.Sprintf("Download done.")
     utl.Log("OUTPUT", infoMess)
 }
 

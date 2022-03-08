@@ -1,0 +1,110 @@
+global:
+    user: "root"
+    ssh_port: 22
+
+server_configs:
+    fe:
+        sys_log_level: "ERROR"
+    be:
+        sys_log_level: "WARNING"
+
+fe_servers:
+  - host: 192.168.230.41
+    ssh_port: 22
+    http_port: 8030
+    rpc_port: 9020
+    query_port: 9030
+    edit_log_port: 9010
+    deploy_dir: /opt/starrocks/fe
+    meta_dir: /data/starrocks/fe/meta
+    log_dir: /opt/starrocks/fe/log
+    priority_networks: 192.168.230.0/24
+    config:
+      sys_log_level: "INFO"
+      sys_log_delete_age: "1d"
+  - host: 192.168.230.42
+    ssh_port: 22
+    http_port: 8030
+    rpc_port: 9020
+    query_port: 9030
+    edit_log_port: 9010
+    deploy_dir: /opt/starrocks/fe
+    meta_dir: /data/starrocks/fe/meta
+    log_dir: /opt/starrocks/fe/log
+    priority_networks: 192.168.230.0/24
+    config:
+      sys_log_delete_age: "2d"
+  - host: 192.168.230.43
+    ssh_port: 22
+    http_port: 8030
+    rpc_port: 9020
+    query_port: 9030
+    edit_log_port: 9010
+    deploy_dir: /opt/starrocks/fe
+    meta_dir: /data/starrocks/fe/meta
+    log_dir: /opt/starrocks/fe/log
+    priority_networks: 192.168.230.0/24
+    config:
+      sys_log_delete_age: "3d"
+
+be_servers:
+  - host: 192.168.230.41
+    ssh_port: 22
+    be_port: 9060
+    webserver_port: 8040
+    heartbeat_service_port: 9050
+    brpc_port: 8060
+    deploy_dir : /opt/starrocks/be
+    storage_dir: /data/starrocks/be/storage
+    log_dir: /opt/starrocks/be/log
+    priority_networks: 192.168.230.0/24
+    config:
+      create_tablet_worker_count: 3
+  - host: 192.168.230.42
+    ssh_port: 22
+    be_port: 9060
+    webserver_port: 8040
+    heartbeat_service_port: 9050
+    brpc_port: 8060
+    deploy_dir : /opt/starrocks/be
+    storage_dir: /data/starrocks/be/storage
+    log_dir: /opt/starrocks/be/log
+    priority_networks: 192.168.230.0/24
+    config:
+      create_tablet_worker_count: 3
+  - host: 192.168.230.43
+    ssh_port: 22
+    be_port: 9060
+    webserver_port: 8040
+    heartbeat_service_port: 9050
+    brpc_port: 8060
+    deploy_dir : /opt/starrocks/be
+    storage_dir: /data/starrocks/be/storage
+    log_dir: /opt/starrocks/be/log
+    priority_networks: 192.168.230.0/24
+    config:
+      create_tablet_worker_count: 3
+
+prometheus_servers:
+    host: 192.168.230.44
+    ssh_port: 22
+    http_port: 9090
+    deploy_dir: /opt/starrocks/monitor/prometheus
+    data_dir: /data/starrocks/monitor/prometheus/data
+    log_dir: /opt/starrocks/monitor/prometheus/log
+
+grafana_servers:
+    host: 192.168.230.44
+    ssh_port: 22
+    http_port: 3000
+    deploy_dir: /opt/starrocks/monitor/grafana
+
+alertmanager_servers:
+    host: 192.168.230.44
+    ssh_port: 22
+    web_port: 9093
+    cluster_port: 9094
+    deploy_dir: /opt/starrocks/monitor/alertmanager
+    data_dir: /data/starrocks/monitor/alertmanager/data
+    log_dir: /opt/starrocks/monitor/alertmanager/log
+
