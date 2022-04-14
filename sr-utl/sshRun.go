@@ -90,6 +90,10 @@ func SshRun(user string, keyFile string, host string, port int, command string) 
     }
 
     output, err := sshRun(sshConfig, host, port, command)
+    if err != nil {
+        infoMess = fmt.Sprintf("Failed to run command. [host = %s, cmd = %s, error = %v]", host, command, err)
+        Log("DEBUG", infoMess)
+    }
     return output, err
 
 }
@@ -116,6 +120,7 @@ func sftpConnect(config *ssh.ClientConfig, host string, port int) (sfpClient *sf
     return sftpClient, nil
 
 }
+
 
 func uploadFile(sftpClient *sftp.Client, localFileName string, remoteFileName string) (err error) {
 
@@ -145,8 +150,8 @@ func uploadFile(sftpClient *sftp.Client, localFileName string, remoteFileName st
     }
 
     dstFile.Write(ff)
-    infoMess = localFileName + " copy file to remote server finished!"
-    Log("DEBUG", infoMess)
+    //infoMess = localFileName + " copy file to remote server finished!"
+    //Log("DEBUG", infoMess)
     // Chmod remoteFile
     fileStat, err := os.Stat(localFileName)
     if err != nil {
@@ -161,8 +166,8 @@ func uploadFile(sftpClient *sftp.Client, localFileName string, remoteFileName st
 	Log("ERROR", infoMess)
 	return err
     }
-    infoMess = fmt.Sprintf("chmod file [%s] to %s", remoteFileName, fileStat.Mode())
-    Log("DEBUG", infoMess)
+    //infoMess = fmt.Sprintf("chmod file [%s] to %s", remoteFileName, fileStat.Mode())
+    //Log("DEBUG", infoMess)
     //Log("INFO", infoMess)
     return err
 }
@@ -300,7 +305,42 @@ func UploadDir(user string, keyFile string, host string, port int, sourceDir str
 
 }
 
+func RenameDir(user string, keyFile string, host string, port int, sourceDir string, targetDir string) (err error){
 
+    var infoMess string
+
+    cmd := fmt.Sprintf("ls %s", sourceDir)
+    _, err = SshRun(user, keyFile, host, port, cmd)
+
+    if err != nil {
+        infoMess = fmt.Sprintf("The source dir [%s] doesn't exist on [%s:%d], create a new one", sourceDir, host, port)
+        Log("ERROR", infoMess)
+        return err 
+    }
+
+    sshConfig, err := NewConfig(keyFile, user)
+    if err != nil {
+        infoMess = fmt.Sprintf("Error in rename dir, failed to get the ssh config. [host = %s, sourceDir = %s, targetDir = %s, err = %v]", host, sourceDir, targetDir, err)
+        Log("ERROR", infoMess)
+        return err
+    }
+
+    sftpClient, err := sftpConnect(sshConfig, host, port)
+    if err != nil {
+        infoMess = fmt.Sprintf("Error in rename dir when create sftp client.[host = %s, sourceDir = %s, targetDir = %s, error = %v", host, sourceDir, targetDir, err)
+        Log("ERROR", infoMess)
+        return err
+    }
+    err = sftpClient.Rename(sourceDir, targetDir)
+    if err != nil {
+        infoMess = fmt.Sprintf("Error in rename dir.[host = %s, sourceDir = %s, targetDir = %s, error = %v", host, sourceDir, targetDir, err)
+        Log("ERROR", infoMess)
+        return err
+    }
+
+    return nil
+
+}
 
 func TestUploadDir() {
 

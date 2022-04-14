@@ -72,7 +72,7 @@ func DownloadFile(fileUrl string, localPath string, fileName string) {
 
 
     if resp.Body == nil {
-        Log("ERROR", "下了个寂寞。The download file Body is null.")
+        Log("ERROR", "The download file Body is null.")
 	Log("ERROR", infoMess)
 	panic(err)
     }
@@ -86,7 +86,7 @@ func DownloadFile(fileUrl string, localPath string, fileName string) {
     }
 
     if info.Size() != fileSize {
-        infoMess = fmt.Sprintf("怎么事？下载错误，好好查查你的网。")
+        infoMess = fmt.Sprintf("Error in download, pls check your network connection.")
 	Log("ERROR", infoMess)
 	panic(err)
     }
@@ -95,7 +95,7 @@ func DownloadFile(fileUrl string, localPath string, fileName string) {
         err = os.Rename(tmpFileName, absFileName)
     }
 
-    infoMess = fmt.Sprintf("哎呦，不错哦。The file %s [%d] download successfully", fileName, fileSize)
+    infoMess = fmt.Sprintf("The file %s [%d] download successfully", fileName, fileSize)
     Log("INFO", infoMess)
 
 }

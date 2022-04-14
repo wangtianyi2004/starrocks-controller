@@ -6,7 +6,9 @@ import (
     "os"
     "flag"
     "sr-controller/sr-utl"
+    "sr-controller/module"
     "sr-controller/cluster/clusterOption"
+    "sr-controller/cluster/upgradeCluster"
 
 )
 func main() {
@@ -99,10 +101,21 @@ func main() {
                     infoMess = fmt.Sprintf("Destroy cluster. [ClusterName = %s]", clusterName)
                     utl.Log("OUTPUT", infoMess)
                     clusterOption.Destroy(clusterName)
-               
-               case "test":
-                    clusterOption.TestOpt()
+               case "upgrade":
+                    clusterName = os.Args[3]
+                    clusterVersion = os.Args[4]
+                    infoMess = fmt.Sprintf("Upgrade cluster. [ClusterName = %s, TargetVersion = %s]", clusterName, clusterVersion)
+                    utl.Log("OUTPUT", infoMess)
+                    clusterOption.Upgrade(clusterName, clusterVersion)
 
+               case "test":
+                    //clusterOption.Upgrade("sr-c1", "v2.1.3")
+                    //utl.RenameDir("starrocks", "/home/sr-dev/.ssh/id_rsa", "192.168.88.83", 22, "/tmp/aaa", "/tmp/bbb")
+                    //upgradeCluster.TestUpgradeBe()
+                    module.InitConf("sr-c1", "")
+                    module.SetGlobalVar("v2.1.3")
+                    upgradeCluster.UpgradeFeCluster()
+                    
                default:
                     infoMess = fmt.Sprintf("ERROR, sr-ctl-cluster don't support %s option", command)
                     utl.Log("ERROR", infoMess)

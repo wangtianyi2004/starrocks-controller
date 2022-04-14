@@ -10,7 +10,7 @@ import (
 )
 
 
-func InitFeCluster(yamlConf *module.ConfStruct) {
+func InitFeCluster() {
 
     var infoMess string
     var err error
@@ -25,30 +25,18 @@ func InitFeCluster(yamlConf *module.ConfStruct) {
     var tmpQueryPort int
     var tmpFeDeployDir string
     var feStatusList string
-    var feEntryId  int
-    tmpUser = yamlConf.Global.User
+
+    tmpUser = module.GYamlConf.Global.User
     tmpKeyRsa = module.GSshKeyRsa
 
-
-    // get FE entry
-    feEntryId, err = checkStatus.GetFeEntry()
-
-    if err != nil ||  feEntryId == -1 {
-        //infoMess = "All FE nodes are down, please start FE node and display the cluster status again."
-        //utl.Log("WARN", infoMess)
-        module.SetFeEntry(0)
-    } else {
-        module.SetFeEntry(feEntryId)
-    }
-
-    for i := 0; i < len(yamlConf.FeServers); i++ {
+    for i := 0; i < len(module.GYamlConf.FeServers); i++ {
     // for i := 0; i < 1; i++ { ## debug leader node
 
-        tmpSshHost = yamlConf.FeServers[i].Host
-        tmpSshPort = yamlConf.FeServers[i].SshPort
-        tmpEditLogPort = yamlConf.FeServers[i].EditLogPort
-        tmpQueryPort = yamlConf.FeServers[i].QueryPort
-        tmpFeDeployDir = yamlConf.FeServers[i].DeployDir
+        tmpSshHost = module.GYamlConf.FeServers[i].Host
+        tmpSshPort = module.GYamlConf.FeServers[i].SshPort
+        tmpEditLogPort = module.GYamlConf.FeServers[i].EditLogPort
+        tmpQueryPort = module.GYamlConf.FeServers[i].QueryPort
+        tmpFeDeployDir = module.GYamlConf.FeServers[i].DeployDir
 
         //infoMess = fmt.Sprintf("Starting FE node [FeHost = %s, FeEditLogPort = %d]", tmpSshHost, tmpEditLogPort)
         //utl.Log("INFO", infoMess)
@@ -98,6 +86,7 @@ func InitFeNode(user string, keyRsa string, sshHost string, sshPort int, editLog
     var infoMess string
     //var isMasterFe bool
     var startFeCmd string
+    var feEntryId  int
     // check master node
     if sshHost == module.GYamlConf.FeServers[0].Host && editLogPort == module.GYamlConf.FeServers[0].EditLogPort {
         //isMasterFe = true
@@ -106,24 +95,32 @@ func InitFeNode(user string, keyRsa string, sshHost string, sshPort int, editLog
         startFeCmd = fmt.Sprintf("%s/bin/start_fe.sh --daemon", feDeployDir)
         // time.Sleep(30 * time.Second)
     } else {
+        //isMasterFe == false
         infoMess = fmt.Sprintf("Starting follower FE node [host = %s, editLogPort = %d]", sshHost, editLogPort)
         utl.Log("INFO", infoMess)
         
-        startFeCmd = fmt.Sprintf("%s/bin/start_fe.sh --helper %s:%d --daemon", feDeployDir, module.GFeEntryHost, module.GFeEntryEditLogPort)
-        fmt.Println("DEBUG initFeNode >>>>>>>> ", startFeCmd)
+        // get FE entry
+        feEntryId, err = checkStatus.GetFeEntry()
 
+        if err != nil ||  feEntryId == -1 {
+            infoMess = "All FE nodes are down, please start FE node and display the cluster status again."
+            utl.Log("WARN", infoMess)
+        } else {
+            module.SetFeEntry(feEntryId)
+        }
+
+        startFeCmd = fmt.Sprintf("%s/bin/start_fe.sh --helper %s:%d --daemon", feDeployDir, module.GFeEntryHost, module.GFeEntryEditLogPort)
         // if the start node is follower node, ALTER SYSTEM ADD FOLLOWER "host:editLogPort";
         // func RunSQL(userName string, password string, ip string, port int, dbName string, sqlStat string) (rows *sql.Rows, err error)
 
         sqlUserName := "root"
         sqlPassword := ""
-        sqlIp := module.GFeEntryHost
-        sqlPort := module.GFeEntryQueryPort
+        sqlIp := module.GYamlConf.FeServers[0].Host
+        sqlPort := module.GYamlConf.FeServers[0].QueryPort
         sqlDbName := ""
         addFollowerSql := fmt.Sprintf("ALTER SYSTEM ADD FOLLOWER \"%s:%d\"", sshHost, editLogPort)
-        fmt.Printf("DEBUG before run add follower node, sqlIP = %s, sqlport = %s", sqlIp, sqlPort)
-        _, err := utl.RunSQL(sqlUserName, sqlPassword, sqlIp, sqlPort, sqlDbName, addFollowerSql)
-       fmt.Println("DEBUG initFeNode >>>>>>>>", "run " + addFollowerSql)
+
+        _, err := utl.RunSQL(sqlUserName, sqlPassword, sqlIp, sqlPort, sqlDbName,addFollowerSql)
         if err != nil  {
             if strings.Contains(err.Error(), "frontend already exists name") {
             } else {
@@ -139,7 +136,6 @@ func InitFeNode(user string, keyRsa string, sshHost string, sshPort int, editLog
     // run feDeploy/bin/start_fe.sh --daemon --helper hsot:edit_log_port
 
     _, err = utl.SshRun(user, keyRsa, sshHost, sshPort, startFeCmd)
-    fmt.Println("DEBUG initFeNode >>>>>>>", "after run startFeCmd")
     if err != nil {
         infoMess = fmt.Sprintf("Waiting for starting FE node [FeHost = %s]", sshHost)
         utl.Log("DEBUG", infoMess)

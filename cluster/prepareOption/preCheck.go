@@ -64,10 +64,10 @@ func PreCheckSR () {
     bePreCheckStat := preCheckBe()
 
     infoMess = fmt.Sprintf("PreCheck FE:\n")
-    infoMess = infoMess + fmt.Sprintf("%-20s  %-15s  %-25s  %-25s  %-15s  %-15s  %-15s  %-15s\n", "IP", "ssh auth", "meta dir", "deploy dir", "http port", "rpc port", "query port", "edit log port")
-    infoMess = infoMess + fmt.Sprintf("%-20s  %-15s  %-25s  %-25s  %-15s  %-15s  %-15s  %-15s\n", tmpMinus[:20], tmpMinus[:15], tmpMinus[:25], tmpMinus[:25], tmpMinus[:15], tmpMinus[:15], tmpMinus[:15], tmpMinus[:15])
+    infoMess = infoMess + fmt.Sprintf("%-20s  %-15s  %-30s  %-30s  %-15s  %-15s  %-15s  %-15s\n", "IP", "ssh auth", "meta dir", "deploy dir", "http port", "rpc port", "query port", "edit log port")
+    infoMess = infoMess + fmt.Sprintf("%-20s  %-15s  %-30s  %-30s  %-15s  %-15s  %-15s  %-15s\n", tmpMinus[:20], tmpMinus[:15], tmpMinus[:30], tmpMinus[:30], tmpMinus[:15], tmpMinus[:15], tmpMinus[:15], tmpMinus[:15])
     for ip, _ := range fePreCheckStat {
-        infoMess = infoMess + fmt.Sprintf("%-20s  %-15s  %-25s  %-25s  %-15s  %-15s  %-15s  %-15s\n", ip,
+        infoMess = infoMess + fmt.Sprintf("%-20s  %-15s  %-30s  %-30s  %-15s  %-15s  %-15s  %-15s\n", ip,
 	                                                                      fePreCheckStat[ip].SshAuth,
 									      fePreCheckStat[ip].MetaDir,
 									      fePreCheckStat[ip].DeployDir,
@@ -79,10 +79,10 @@ func PreCheckSR () {
     infoMess = infoMess + fmt.Sprintf("\n")
     infoMess = infoMess + fmt.Sprintf("PreCheck BE:\n")
 
-    infoMess = infoMess + fmt.Sprintf("%-20s  %-15s  %-25s  %-25s  %-15s  %-15s  %-15s  %-15s\n", "IP", "ssh auth", "storage dir", "deploy dir", "webSer port", "heartbeat port", "brpc port", "be port")
-    infoMess = infoMess + fmt.Sprintf("%-20s  %-15s  %-25s  %-25s  %-15s  %-15s  %-15s  %-15s\n", tmpMinus[:20], tmpMinus[:15], tmpMinus[:25], tmpMinus[:25], tmpMinus[:15], tmpMinus[:15], tmpMinus[:15], tmpMinus[:15])
+    infoMess = infoMess + fmt.Sprintf("%-20s  %-15s  %-30s  %-30s  %-15s  %-15s  %-15s  %-15s\n", "IP", "ssh auth", "storage dir", "deploy dir", "webSer port", "heartbeat port", "brpc port", "be port")
+    infoMess = infoMess + fmt.Sprintf("%-20s  %-15s  %-30s  %-30s  %-15s  %-15s  %-15s  %-15s\n", tmpMinus[:20], tmpMinus[:15], tmpMinus[:30], tmpMinus[:30], tmpMinus[:15], tmpMinus[:15], tmpMinus[:15], tmpMinus[:15])
     for ip, _ := range bePreCheckStat {
-        infoMess = infoMess + fmt.Sprintf("%-20s  %-15s  %-25s  %-25s  %-15s  %-15s  %-15s  %-15s\n", ip,
+        infoMess = infoMess + fmt.Sprintf("%-20s  %-15s  %-30s  %-30s  %-15s  %-15s  %-15s  %-15s\n", ip,
 	                                                                bePreCheckStat[ip].SshAuth,
 									bePreCheckStat[ip].storageDir,
 									bePreCheckStat[ip].DeployDir,

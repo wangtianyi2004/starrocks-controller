@@ -9,8 +9,8 @@ import(
     "sr-controller/sr-utl"
 )
 
-func GetFeEntry() (feHost string, queryPort int, err error){
-
+//func GetFeEntry() (feHost string, queryPort int, err error){
+func GetFeEntry() (feEntryId int, err error) {
     // feHost, queryPort, err := checkStatus.GetFeEntry()
     // get a usable FE host & query port for checking FE/BE status by [show frontends] & [show backends] command
 
@@ -34,11 +34,11 @@ func GetFeEntry() (feHost string, queryPort int, err error){
 	if strings.Contains(string(output), ":" + strconv.Itoa(tmpQueryPort)) {
             infoMess = fmt.Sprintf("Get a useable FE entry. [FeID = %d, FeHost = %s, QueryPort = %d]", i, tmpSshHost, tmpQueryPort)
             utl.Log("DEBUG", infoMess)
-            return tmpSshHost, tmpQueryPort, nil
+            return i, nil
 	}
     }
 
     err = errors.New("There is no useable FE entry.")
-    return "", 0, err
+    return -1, err
 
 }

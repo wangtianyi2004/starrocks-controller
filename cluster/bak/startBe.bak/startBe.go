@@ -17,28 +17,31 @@ func StartBeCluster() {
     var beStat checkStatus.BeStatusStruct
 
     // start Fe node one by one
-    var tmpUser string
-    var tmpKeyRsa string
-    var tmpSshHost string
-    var tmpSshPort int
-    var tmpHeartbeatServicePort int
-    var tmpBeDeployDir string
-    var beStatusList string
+    var tmpUser                    string
+    var tmpKeyRsa                  string
+    var tmpSshHost                 string
+    var tmpSshPort                 int
+    var tmpHeartbeatServicePort    int
+    var tmpBeDeployDir             string
+    var feEntryId                  int
+    //var tmpFeEntryHost             string
+    //var tmpFeEntryPort             int
+    var beStatusList               string
 
     tmpUser = module.GYamlConf.Global.User
     tmpKeyRsa = "/root/.ssh/id_rsa"
 
     // get FE entry
-    tmpFeEntryHost, tmpFeEntryPort, err := checkStatus.GetFeEntry()
-    module.SetFeEntry(tmpFeEntryHost, tmpFeEntryPort)
-    //feEntryHost, FeEntryqueryPort, err := checkStatus.GetFeEntry()
+    feEntryId, err = checkStatus.GetFeEntry()
     if err != nil || module.GFeEntryHost == "" || module.GFeEntryPort == 0 {
         infoMess = "Error in get the FE entry, pls check FE status."
 	utl.Log("ERROR", infoMess)
 	err = errors.New(infoMess)
 	panic(err)
     }
-
+    // tmpFeEntryHost = module.GYamlConf.FeServers[feEntryId].Host
+    // tmpFeEntryPort = module.GYamlConf.FeServers[feEntryId].QueryPort
+    module.SetFeEntry(feEntryId)
 
 
     for i := 0; i < len(module.GYamlConf.BeServers); i++ {

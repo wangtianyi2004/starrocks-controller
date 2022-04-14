@@ -10,7 +10,6 @@ func Display(clusterName string) {
 
 
     module.InitConf(clusterName, "")
-
     clusterStatus.ClusterStat(clusterName)
 }
 

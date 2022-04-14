@@ -12,6 +12,7 @@ func ClusterStat(clusterName string) {
 
     var infoMess string
     fmt.Printf("clusterName = %s\n", clusterName)
+    fmt.Printf("clusterVerison = %s\n", module.GYamlConf.ClusterInfo.Version)
     //metaFile := "/tmp/c1-meta.yaml"
     //module.InitConf(metaFile)
 
@@ -22,18 +23,21 @@ func ClusterStat(clusterName string) {
     var tmpStat                string
     var tmpDataDir             string
     var tmpDeployDir           string
-
+    var feEntryId              int
     var noFeEntry              bool
-
+    var err                    error
 
     // Get FE entry
-    feEntryHost, feEntryQueryPort, err := checkStatus.GetFeEntry()
-    if err != nil || feEntryHost == "" || feEntryQueryPort == 0 {
+    feEntryId, err = checkStatus.GetFeEntry()
+    // feEntryHost, feEntryQueryPort, err := checkStatus.GetFeEntry()
+    if err != nil ||  feEntryId == -1 {
         infoMess = "All FE nodes are down, please start FE node and display the cluster status again."
         utl.Log("WARN", infoMess)
         noFeEntry = true 
     } else {
-        module.SetFeEntry(feEntryHost, feEntryQueryPort)
+        // feEntryHost = module.GYamlConf.FeServers[feEntryId].Host
+        // feEntryQueryPort = module.GYamlConf.FeServers[feEntryId].QueryPort
+        module.SetFeEntry(feEntryId)
     }
 
     tmpMinus := []byte("------------------------------------------------------------------------------------------------------")

@@ -13,7 +13,7 @@ import(
 
 
 
-func InitBeCluster() {
+func InitBeCluster(yamlConf *module.ConfStruct) {
 
     var infoMess string
     var err error
@@ -27,15 +27,18 @@ func InitBeCluster() {
     var tmpHeartbeatServicePort int
     var tmpBeDeployDir string
     var beStatusList string
-
+    // var tmpFeEntryHost string
+    // var tmpFeEntryPort int
     tmpUser = module.GYamlConf.Global.User
     tmpKeyRsa = module.GSshKeyRsa
 
     // get FE entry
-    tmpFeEntryHost, tmpFeEntryPort, err := checkStatus.GetFeEntry()
-    module.SetFeEntry(tmpFeEntryHost, tmpFeEntryPort)
+    feEntryId, err := checkStatus.GetFeEntry()
+    //tmpFeEntryHost = yamlConf.FeServers[feEntryId].Host
+    //tmpFeEntryPort = yamlConf.FeServers[feEntryId].QueryPort
+    module.SetFeEntry(feEntryId)
     //feEntryHost, FeEntryqueryPort, err := checkStatus.GetFeEntry()
-    if err != nil || module.GFeEntryHost == "" || module.GFeEntryPort == 0 {
+    if err != nil || feEntryId == -1 {
         infoMess = "Error in get the FE entry, pls check FE status."
 	utl.Log("ERROR", infoMess)
 	err = errors.New(infoMess)
@@ -44,12 +47,12 @@ func InitBeCluster() {
 
 
 
-    for i := 0; i < len(module.GYamlConf.BeServers); i++ {
+    for i := 0; i < len(yamlConf.BeServers); i++ {
 
-        tmpSshHost = module.GYamlConf.BeServers[i].Host
-        tmpSshPort = module.GYamlConf.BeServers[i].SshPort
-        tmpHeartbeatServicePort = module.GYamlConf.BeServers[i].HeartbeatServicePort
-        tmpBeDeployDir = module.GYamlConf.BeServers[i].DeployDir
+        tmpSshHost = yamlConf.BeServers[i].Host
+        tmpSshPort = yamlConf.BeServers[i].SshPort
+        tmpHeartbeatServicePort = yamlConf.BeServers[i].HeartbeatServicePort
+        tmpBeDeployDir = yamlConf.BeServers[i].DeployDir
 
 	infoMess = fmt.Sprintf("Starting BE node [BeHost = %s HeartbeatServicePort = %d]", tmpSshHost, tmpHeartbeatServicePort)
         utl.Log("INFO", infoMess)
@@ -62,8 +65,6 @@ func InitBeCluster() {
 	    err = initBeNode(tmpUser, tmpKeyRsa, tmpSshHost, tmpSshPort, tmpHeartbeatServicePort, tmpBeDeployDir)
 
 	    startWaitTime := time.Duration(20 - startTimeInd * 5)
-            //utl.Log("INFO", "广告招商_ ****************************")
-            //utl.Log("INFO", "充钱，跳过广告* **********************")
 	    // the be process need 20s to startup
 	    time.Sleep(startWaitTime  * time.Second)
 
@@ -102,8 +103,8 @@ func initBeNode(user string, keyRsa string, sshHost string, sshPort int, heartbe
     // alter system add backend "sshHost:heartbeatServicePort"
     sqlUserName := "root"
     sqlPassword := ""
-    sqlIp := module.GYamlConf.FeServers[0].Host
-    sqlPort := module.GYamlConf.FeServers[0].QueryPort
+    sqlIp := module.GFeEntryHost
+    sqlPort := module.GFeEntryQueryPort
     sqlDbName := ""
 
     _, err = utl.RunSQL(sqlUserName, sqlPassword, sqlIp, sqlPort, sqlDbName, addBeSQL)

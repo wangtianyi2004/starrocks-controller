@@ -21,22 +21,26 @@ var GYamlConf              *ConfStruct
 var GYamlConfAppend        *ConfStruct
 var GSshKeyRsa             string
 var GSRCtlRoot             string
+var GSRVersion             string
 var GWriteBackMetaPath     string
 var GJdbcUser              string
 var GJdbcPasswd            string
 var GJdbcDb                string
 var GFeEntryHost           string
-var GFeEntryPort           int
+var GFeEntryQueryPort      int
+var GFeEntryEditLogPort    int
 
+    
 
 type ConfStruct struct {
 
     ClusterInfo struct {
         User                  string                 `yaml:"user"`
+        Version               string                 `yaml:"version"`
 	CreateDate            string                 `yaml:"create_date"`
 	MetaPath              string                 `yaml:"meta_path"`
         PrivateKey            string                 `yaml:"private_key"`
-    }
+    } `yaml:"clusterinfo"`
 
     Global struct {
         User                  string                 `yaml:"user"`
@@ -153,9 +157,22 @@ func InitConf(clusterName string, fileName string) {
 
 
 
-func AppendConf(fileName string) {
+func AppendConf(clusterName string) {
+
     var confS ConfStruct
-    GYamlConfAppend = confS.GetConf(fileName)
+    var metaFile string
+
+    osUser, _ := user.Current()
+    GSshKeyRsa = fmt.Sprintf("%s/.ssh/id_rsa", osUser.HomeDir)
+    GSRCtlRoot = os.Getenv("SRCTLROOT")
+    if GSRCtlRoot == "" {
+        GSRCtlRoot = fmt.Sprintf("%s/.starrocks-controller", osUser.HomeDir)
+    }
+    metaFile = fmt.Sprintf("%s/cluster/%s/meta.yaml", GSRCtlRoot, clusterName)
+
+
+    GYamlConfAppend = confS.GetConf(metaFile)
+
 }
 
 
@@ -167,7 +184,7 @@ func WriteBackMeta(cc *ConfStruct, metaFilePath string) {
     var metaFileName   string
     // check the metaFile exist, if the file doesn't exist, create a new one. 
     metaFileName = metaFilePath + "/meta.yaml"
-    _ = os.MkdirAll(metaFilePath, 0666)
+    _ = os.MkdirAll(metaFilePath, 0751)
     _, err := os.Create(metaFileName)
     if err != nil {
         infoMess = fmt.Sprintf("Error in create the meta file [fileName = %s]", metaFileName)
@@ -194,6 +211,7 @@ func WriteBackMeta(cc *ConfStruct, metaFilePath string) {
     // write back cluster info
     cc.ClusterInfo.User = GYamlConf.Global.User
     cc.ClusterInfo.CreateDate = time.Unix(time.Now().Unix(), 0,).Format("2006-01-02 15:04:05")
+    cc.ClusterInfo.Version = GSRVersion
     cc.ClusterInfo.MetaPath = GWriteBackMetaPath
     cc.ClusterInfo.PrivateKey = GSshKeyRsa
 
@@ -211,10 +229,14 @@ func WriteBackMeta(cc *ConfStruct, metaFilePath string) {
 
 }
 
+func SetGlobalVar(srVersion string) {
+    GSRVersion = srVersion
+}
 
-func SetFeEntry(host string, port int) {
-    GFeEntryHost = host
-    GFeEntryPort = port
+func SetFeEntry(feEntryId int) {
+    GFeEntryHost = GYamlConf.FeServers[feEntryId].Host
+    GFeEntryQueryPort = GYamlConf.FeServers[feEntryId].QueryPort
+    GFeEntryEditLogPort = GYamlConf.FeServers[feEntryId].EditLogPort
 }
 
 

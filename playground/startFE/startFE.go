@@ -65,12 +65,15 @@ func RunFEProcess() {
 	err = os.RemoveAll(metaDir)
     }
 
-    err = os.Mkdir(metaDir, 0666)
+    err = os.Mkdir(metaDir, 0751)
     if err != nil { panic(err) }
 
     // run start_fe.sh
     execCMD := "/root/.starrocks-controller/playground/fe/bin/start_fe.sh --daemon"
-    _ = utl.RunShellScript(execCMD)
+    _, err = utl.RunShellScript(execCMD)
+    if err != nil {
+        fmt.Println("Error in running cmd, cmd = %s, err = %v\n", execCMD, err)
+    }
 
     time.Sleep(time.Duration(15) * time.Second)
 
@@ -81,12 +84,15 @@ func CheckFEStatus() {
 
     execCMD := "mysql -uroot -h127.0.0.1 -P9030 -e 'show frontends\\G' | grep Alive"
     for i := 0; i < 5; i++ {
-	res := utl.RunShellScript(execCMD)
+	res, _:= utl.RunShellScript(execCMD)
+
         if strings.Contains(res, "true") {
             fmt.Println("fe start successfully.")
             break
         }
 	time.Sleep(time.Duration(5) * time.Second)
     }
+
+    fmt.Println("DEBUG >>>>>>>>>>>>>>>>> checkFEStatus end")
 
 }

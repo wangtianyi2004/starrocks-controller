@@ -2,6 +2,7 @@ package modifyConfig
 import (
     "fmt"
     "strconv"
+    "strings"
     "sr-controller/module"
     "sr-controller/sr-utl"
 )
@@ -52,7 +53,7 @@ func ModifyClusterConfig() {
         // copy fe config file
 	tmpFeHost := module.GYamlConf.FeServers[i].Host
 	tmpFeQueryPort := module.GYamlConf.FeServers[i].QueryPort
-	tmpFeSourceConfFile := fmt.Sprintf("%s/download/StarRocks-2.0.1/fe/conf/fe.conf", module.GSRCtlRoot)
+	tmpFeSourceConfFile := fmt.Sprintf("%s/download/StarRocks-%s/fe/conf/fe.conf", module.GSRCtlRoot, strings.Replace(module.GSRVersion, "v", "", -1))
 	tmpFeTargetConfFile := fmt.Sprintf("%s/tmp/fe.conf-%s-%d", module.GSRCtlRoot, tmpFeHost, tmpFeQueryPort)
 
 	err := copyConfigFile(tmpFeSourceConfFile, tmpFeTargetConfFile)
@@ -99,7 +100,7 @@ func ModifyClusterConfig() {
         // copy BE config file
         tmpBeHost := module.GYamlConf.BeServers[i].Host
         tmpBeHeartbeatServicePort := module.GYamlConf.BeServers[i].HeartbeatServicePort
-	tmpBeSourceConfFile := fmt.Sprintf("%s/download/StarRocks-2.0.1/be/conf/be.conf", module.GSRCtlRoot)
+	tmpBeSourceConfFile := fmt.Sprintf("%s/download/StarRocks-%s/be/conf/be.conf", module.GSRCtlRoot, strings.Replace(module.GSRVersion, "v", "", -1))
         tmpBeTargetConfFile := fmt.Sprintf("%s/tmp/be.conf-%s-%d", module.GSRCtlRoot, tmpBeHost, tmpBeHeartbeatServicePort)
 
         err := copyConfigFile(tmpBeSourceConfFile, tmpBeTargetConfFile)

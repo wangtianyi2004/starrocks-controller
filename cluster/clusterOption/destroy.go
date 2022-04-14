@@ -10,7 +10,7 @@ func Destroy(clusterName string) {
 
 
     module.InitConf(clusterName, "")
-
+    Stop(clusterName, module.NULLSTR, module.NULLSTR)
     destroyCluster.DestroyCluster(clusterName)
 }
 

@@ -34,11 +34,18 @@ func AddBENode() {
 
     // add be node in fe
     addExecCMD := "mysql -uroot -P9030 -h127.0.0.1 -e 'alter system add backend \"127.0.0.1:9050\"'"
-    _ = utl.RunShellScript(addExecCMD)
+    _, err := utl.RunShellScript(addExecCMD)
+    if err != nil{
+        fmt.Println("Error in running cmd, cmd = %s, err = %v\n", addExecCMD, err)
+    }
 
     time.Sleep(time.Duration(5) * time.Second)
     checkExecCMD := "mysql -uroot -P9030 -h127.0.0.1 -e 'show backends \\G'"
-    res := utl.RunShellScript(checkExecCMD)
+    res, err := utl.RunShellScript(checkExecCMD)
+    if err != nil{
+        fmt.Println("Error in running cmd, cmd = %s, err = %v\n", checkExecCMD, err)
+    }
+
     if strings.Contains(res, "127.0.0.1") {
         fmt.Println("BE node 127.0.0.1 added successfully.")
     }
@@ -56,12 +63,15 @@ func RunBEProcess() {
         err = os.RemoveAll(storageDir)
     }
 
-    err = os.Mkdir(storageDir, 0666)
+    err = os.Mkdir(storageDir, 0751)
     if err != nil { panic(err) }
 
     // run start_fe.sh
     execCMD := "/root/.starrocks-controller/playground/be/bin/start_be.sh --daemon"
-    _ = utl.RunShellScript(execCMD)
+    _, err = utl.RunShellScript(execCMD)
+    if err != nil {
+        fmt.Printf("Error in running be process, cmd = %s, err = %v", execCMD, err)
+    }
 
     time.Sleep(time.Duration(15) * time.Second)
 
@@ -71,7 +81,7 @@ func CheckBEStatus() {
 
     execCMD := "mysql -uroot -h127.0.0.1 -P9030 -e 'show backends\\G' | grep Alive"
     for i := 0; i < 5; i++ {
-        res := utl.RunShellScript(execCMD)
+        res, _ := utl.RunShellScript(execCMD)
         if strings.Contains(res, "true") {
             fmt.Println("be start successfully.")
             break

@@ -13,7 +13,10 @@ func PreCheck() {
 
     // check mysql client exists
     execCMD := "which mysql"
-    res := utl.RunShellScript(execCMD)
+    res, err := utl.RunShellScript(execCMD)
+    if err != nil {
+        fmt.Printf("Error in running cmd, cmd = $s, err = %v\n", execCMD, err)
+    }
     if !strings.Contains(res, "mysql") {
         fmt.Println("[precheck] Detect MySQL client not exists.")
 	errFlg = 1
@@ -30,7 +33,7 @@ func PreCheck() {
 
     // check folder exist
     playgroundFolder := "/root/.starrocks-controller/playground"
-    _, err := os.Stat(playgroundFolder)
+    _, err = os.Stat(playgroundFolder)
     if err == nil {
         fmt.Printf("[precheck] Detect the folder %s exists, please romove it first using [ rm -rf %s ]", playgroundFolder, playgroundFolder)
 	errFlg = 1
@@ -40,20 +43,20 @@ func PreCheck() {
     _, err = os.Stat(starRocksManagerFolder)
     if err != nil {
 	fmt.Println("[precheck] mkdir /root/.starrocks-controller")
-        os.Mkdir(starRocksManagerFolder, 0666)
+        os.Mkdir(starRocksManagerFolder, 0751)
     }
 
     starRocksDownload := "/root/.starrocks-controller/download"
     _, err = os.Stat(starRocksDownload)
     if err != nil {
         fmt.Println("[precheck] mkdir /root/.starrocks-controller/download")
-        os.Mkdir(starRocksDownload, 0666)
+        os.Mkdir(starRocksDownload, 0751)
     }
 
 
     if errFlg == 0 {
-        os.Mkdir(playgroundFolder, 0666)
-        os.Mkdir(playgroundFolder + "/download", 0666)
+        os.Mkdir(playgroundFolder, 0751)
+        os.Mkdir(playgroundFolder + "/download", 0751)
     } else {
         os.Exit(1)
     }

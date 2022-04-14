@@ -4,7 +4,7 @@ import (
     "sr-controller/sr-utl"
     "fmt"
     "os"
-    "os/exec"
+//    "os/exec"
 //    "strings"
 )
 
@@ -91,7 +91,7 @@ func DeployPkg() {
     fmt.Printf("mv %s to %s\n", sourceDir, targetDir)
 
 }
-
+/*
 func RunShellScript(scriptName string) string {
     cmd := exec.Command("/bin/bash", "-c", scriptName)
     res, err := cmd.Output()
@@ -99,4 +99,6 @@ func RunShellScript(scriptName string) string {
     fmt.Println(string(res))
     return string(res)
 }
+*/
+
 

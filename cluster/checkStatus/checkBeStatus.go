@@ -80,7 +80,7 @@ func GetBeStatJDBC(beId int) (beStat BeStatusStruct, err error) {
     tmpBeHost := module.GYamlConf.BeServers[beId].Host
     tmpHeartbeatServicePort := module.GYamlConf.BeServers[beId].HeartbeatServicePort
 
-    rows, err := utl.RunSQL(module.GJdbcUser, module.GJdbcPasswd, module.GFeEntryHost, module.GFeEntryPort, module.GJdbcDb, queryCMD)
+    rows, err := utl.RunSQL(module.GJdbcUser, module.GJdbcPasswd, module.GFeEntryHost, module.GFeEntryQueryPort, module.GJdbcDb, queryCMD)
     if err != nil{
         infoMess = fmt.Sprintf("Error in run sql when check BE status: [BeHost = %s, error = %v]", tmpBeHost, err)
         utl.Log("DEBUG", infoMess)

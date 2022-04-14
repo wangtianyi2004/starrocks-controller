@@ -16,7 +16,7 @@ func StopBeNode(user string, keyRsa string, sshHost string, sshPort int, beDeplo
 
     // /opt/starrocks/be/bin/stop_be.sh
     stopBeCmd = fmt.Sprintf("%s/bin/stop_be.sh", beDeployDir)
-
+ 
     infoMess = fmt.Sprintf("Waiting for stoping BE node [BeHost = %s]", sshHost)
     utl.Log("INFO", infoMess)
     _, err = utl.SshRun(user, keyRsa, sshHost, sshPort, stopBeCmd)

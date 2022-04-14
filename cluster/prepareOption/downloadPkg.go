@@ -5,6 +5,7 @@ import (
     "sr-controller/sr-utl"
     "sr-controller/module"
     "fmt"
+    "strings"
 )
 
 
@@ -28,12 +29,10 @@ func DownloadSRPkg() {
     // download sr & jdk union package
     // http://cdn-thirdparty.starrocks.com/starrocks-2.0.1-quickstart.tar.gz?Expires=10282764349&OSSAccessKeyId=LTAI4GFYjbX9e7QmFnAAvkt8&Signature=kXpA4RHT3sg4Lz9vyRJtbnPdmqM%3D
     var infoMess string
-    pkgUrl := "http://cdn-thirdparty.starrocks.com/starrocks-2.0.1-quickstart.tar.gz?Expires=10282764349&OSSAccessKeyId=LTAI4GFYjbX9e7QmFnAAvkt8&Signature=kXpA4RHT3sg4Lz9vyRJtbnPdmqM%3D"
+    pkgUrl := fmt.Sprintf("http://192.168.88.89:9000/starrocks-quick-start/starrocks-%s-quickstart.tar.gz", strings.Replace(module.GSRVersion, "v", "", -1))
     downloadPath := module.GSRCtlRoot + "/download"
-    downloadFile := "starrocks-2.0.1-quickstart.tar.gz"
+    downloadFile := fmt.Sprintf("starrocks-%s-quickstart.tar.gz", strings.Replace(module.GSRVersion, "v", "", -1))
     utl.DownloadFile(pkgUrl, downloadPath, downloadFile)
-    //infoMess = fmt.Sprintf("这么大的文件，这么慢的网，费劲吧啦下载好了。跨过千山万水，来爱你，比心。")
-    // utl.Log("OUTPUT", infoMess)
     infoMess = fmt.Sprintf("Download done.")
     utl.Log("OUTPUT", infoMess)
 }
@@ -47,14 +46,14 @@ func DecompressSRPkg() {
     var infoMess string
 
     // Decompress SR & JDK union pakcage
-    tarFileName = module.GSRCtlRoot + "/download/starrocks-2.0.1-quickstart.tar.gz"
+    tarFileName = module.GSRCtlRoot + fmt.Sprintf("/download/starrocks-%s-quickstart.tar.gz", strings.Replace(module.GSRVersion, "v", "", -1))
     destFilePath = module.GSRCtlRoot + "/download"
     utl.UnTargz(tarFileName, destFilePath)
     infoMess = fmt.Sprintf("The tar file %s has been decompressed under %s", tarFileName, destFilePath)
     utl.Log("INFO", infoMess)
 
     // Decompress StarRocks Package
-    tarFileName = module.GSRCtlRoot + "/download/StarRocks-2.0.1.tar.gz"
+    tarFileName = module.GSRCtlRoot + fmt.Sprintf("/download/StarRocks-%s.tar.gz", strings.Replace(module.GSRVersion, "v", "", -1))
     destFilePath = module.GSRCtlRoot + "/download"
     utl.UnTargz(tarFileName, destFilePath)
     infoMess = fmt.Sprintf("The tar file %s has been decompressed under %s", tarFileName, destFilePath)
