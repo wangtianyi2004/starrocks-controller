@@ -107,7 +107,12 @@ func main() {
                     infoMess = fmt.Sprintf("Upgrade cluster. [ClusterName = %s, TargetVersion = %s]", clusterName, clusterVersion)
                     utl.Log("OUTPUT", infoMess)
                     clusterOption.Upgrade(clusterName, clusterVersion)
-
+               case "downgrade":
+                    clusterName = os.Args[3]
+                    clusterVersion = os.Args[4]
+                    infoMess = fmt.Sprintf("Downgrade cluster. [ClusterName = %s, TargetVersion = %s]", clusterName, clusterVersion)
+                    utl.Log("OUTPUT", infoMess)
+                    clusterOption.Downgrade(clusterName, clusterVersion)
                case "test":
                     //clusterOption.Upgrade("sr-c1", "v2.1.3")
                     //utl.RenameDir("starrocks", "/home/sr-dev/.ssh/id_rsa", "192.168.88.83", 22, "/tmp/aaa", "/tmp/bbb")
