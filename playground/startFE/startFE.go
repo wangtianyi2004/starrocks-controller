@@ -93,6 +93,5 @@ func CheckFEStatus() {
 	time.Sleep(time.Duration(5) * time.Second)
     }
 
-    fmt.Println("DEBUG >>>>>>>>>>>>>>>>> checkFEStatus end")
 
 }

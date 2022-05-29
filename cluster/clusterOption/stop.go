@@ -6,6 +6,7 @@ import(
     "sr-controller/sr-utl"
     "sr-controller/cluster/checkStatus"
     "fmt"
+    "os"
 )
 
 
@@ -25,11 +26,16 @@ func Stop(clusterName string, nodeId string, role string) {
     tmpUser = module.GYamlConf.Global.User
     tmpKeyRsa = module.GSshKeyRsa
 
+    if checkStatus.CheckClusterName(clusterName) {
+        infoMess = "Don't find the Cluster " + clusterName 
+        utl.Log("ERROR", infoMess)
+        os.Exit(1)
+    }
 
     // stop all cluster: sr-ctl-cluster stop sr-c1 
-    // stop 1 node: sr-ctl-cluster stop sr-c1 -N 192.168.88.33:9010
-    // stop all FE node: sr-ctl-cluster stop sr-c1 -R FE
-    // stop all BE node: sr-ctl-cluster stop sr-c1 -R BE
+    // stop 1 node: sr-ctl-cluster stop sr-c1 --node 192.168.88.33:9010
+    // stop all FE node: sr-ctl-cluster stop sr-c1 --role FE
+    // stop all BE node: sr-ctl-cluster stop sr-c1 --role BE
 
 
 
@@ -41,7 +47,6 @@ func Stop(clusterName string, nodeId string, role string) {
     //  |  3         | !null      |  null     |  stop  the FE/BE node (BE only)                 |
     //  |  4         | !null      |  !null    |  error                                          |
     //  -----------------------------------------------------------------------------------------
-    // fmt.Printf("DEBUG >>>>>>>>>>>>>>>>> nodeId = %s, role = %s\n", nodeId, role)
     if nodeId == module.NULLSTR && role == module.NULLSTR {
         // case id 1: - stop all cluster: sr-ctl-cluster stop sr-c1
         stopCluster.StopFeCluster(clusterName)
@@ -68,7 +73,6 @@ func Stop(clusterName string, nodeId string, role string) {
         // case id 3: stop the FE/BE node
 	// get the node type
 	tmpNodeType, i := checkStatus.GetNodeType(nodeId)
-	fmt.Println("DEBUG >>>>>>>>>>>>>>>>>>>>>>>", tmpNodeType, i)
 	if tmpNodeType == "FE" {
             tmpNodeHost = module.GYamlConf.FeServers[i].Host
             tmpSshPort = module.GYamlConf.FeServers[i].SshPort
@@ -92,7 +96,7 @@ func Stop(clusterName string, nodeId string, role string) {
     }// end of case 3
 
     if nodeId != module.NULLSTR && role != module.NULLSTR {
-        infoMess = "Detect both -N & -R option."
+        infoMess = "Detect both --node & --role option."
 	utl.Log("ERROR", infoMess)
     } // end of case 4
 

@@ -6,9 +6,10 @@ import (
     "os"
     "flag"
     "sr-controller/sr-utl"
-    "sr-controller/module"
     "sr-controller/cluster/clusterOption"
-    "sr-controller/cluster/upgradeCluster"
+    //"sr-controller/cluster/checkStatus"
+    // "sr-controller/module"
+    "sr-controller/cluster/prepareOption"
 
 )
 func main() {
@@ -65,7 +66,6 @@ func main() {
                     flag.StringVar(&node, "node", "", "The Node ID. Use display command to check the node id.")
                     flag.StringVar(&role, "role", "", "The start component type. You can input FE or BE.")
                     flag.CommandLine.Parse(os.Args[firstArgWithDash:])
-                    //fmt.Printf("DEBUG start option: [role = %s, node = %s]\n", role, node)
                     clusterOption.Start(clusterName, node, role)
 
                case "stop":
@@ -82,7 +82,6 @@ func main() {
                     flag.StringVar(&node, "node", "", "The Node ID. Use display command to check the node id.")
                     flag.StringVar(&role, "role", "", "The start component type. You can input FE or BE.")
                     flag.CommandLine.Parse(os.Args[firstArgWithDash:])
-                    //fmt.Printf("DEBUG stop option: [role = %s, node = %s]\n", role, node)
                     clusterOption.Stop(clusterName, node, role)
 
                case "display":
@@ -101,26 +100,55 @@ func main() {
                     infoMess = fmt.Sprintf("Destroy cluster. [ClusterName = %s]", clusterName)
                     utl.Log("OUTPUT", infoMess)
                     clusterOption.Destroy(clusterName)
+
                case "upgrade":
                     clusterName = os.Args[3]
                     clusterVersion = os.Args[4]
                     infoMess = fmt.Sprintf("Upgrade cluster. [ClusterName = %s, TargetVersion = %s]", clusterName, clusterVersion)
                     utl.Log("OUTPUT", infoMess)
                     clusterOption.Upgrade(clusterName, clusterVersion)
+
                case "downgrade":
                     clusterName = os.Args[3]
                     clusterVersion = os.Args[4]
                     infoMess = fmt.Sprintf("Downgrade cluster. [ClusterName = %s, TargetVersion = %s]", clusterName, clusterVersion)
                     utl.Log("OUTPUT", infoMess)
                     clusterOption.Downgrade(clusterName, clusterVersion)
+
+               case "scale-out":
+                    clusterName = os.Args[3]
+                    //clusterVersion = os.Args[4]
+                    metaFile = os.Args[4]
+                    infoMess = fmt.Sprintf("Scale out cluster. [ClusterName = %s]", clusterName)
+                    utl.Log("OUTPUT", infoMess)
+                    clusterOption.ScaleOut(clusterName, metaFile)
+
+               case "scale-in":
+                    clusterName = os.Args[3]
+                    firstArgWithDash = 1
+                    for i := 1; i < len(os.Args); i++ {
+                        firstArgWithDash = i
+                        if len(os.Args[i]) > 0 && os.Args[i][0] == '-' {
+                            break
+                        }
+                    }
+                    flag.StringVar(&node, "node", "", "The Node ID. Use display command to check the node id.")
+                    flag.CommandLine.Parse(os.Args[firstArgWithDash:])
+                    infoMess = fmt.Sprintf("Scale in cluster [clusterName = %s, nodeId = %s]", clusterName, node)
+                    utl.Log("OUTPUT", infoMess)
+                    clusterOption.ScaleIn(clusterName, node)
+
+               case "import":
+                   clusterName = os.Args[3]
+		   metaFile = os.Args[4]
+                   infoMess = fmt.Sprintf("Import the cluster [clusterName = %s, metaFile = %s]", clusterName, metaFile)
+		   utl.Log("OUTPUT", infoMess)
+		   clusterOption.ImportCluster(clusterName, metaFile)
                case "test":
-                    //clusterOption.Upgrade("sr-c1", "v2.1.3")
-                    //utl.RenameDir("starrocks", "/home/sr-dev/.ssh/id_rsa", "192.168.88.83", 22, "/tmp/aaa", "/tmp/bbb")
-                    //upgradeCluster.TestUpgradeBe()
-                    module.InitConf("sr-c1", "")
-                    module.SetGlobalVar("v2.1.3")
-                    upgradeCluster.UpgradeFeCluster()
-                    
+		   utl.Log("OUTPUT", "TEST >>>>>>>>>")
+		   // checkStatus.TestFeStatus()
+		   prepareOption.TestPreCheck()
+		   //prepareOption.PreCheckSR()
                default:
                     infoMess = fmt.Sprintf("ERROR, sr-ctl-cluster don't support %s option", command)
                     utl.Log("ERROR", infoMess)

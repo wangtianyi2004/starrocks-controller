@@ -9,6 +9,7 @@ import (
     "os/user"
     "time"
     "strings"
+    "errors"
     "sr-controller/sr-utl"
 )
 
@@ -29,8 +30,16 @@ var GJdbcDb                string
 var GFeEntryHost           string
 var GFeEntryQueryPort      int
 var GFeEntryEditLogPort    int
+var GRepo                  *RepoStruct
+var GDownloadPath          string
 
-    
+
+
+     
+type RepoStruct struct {
+    Repo    string     `yaml:"repo"`
+}
+
 
 type ConfStruct struct {
 
@@ -70,7 +79,7 @@ type ConfStruct struct {
         Host                 string                   `yaml:"host"`
         SshPort              int                      `yaml:"ssh_port"`
         BePort               int                      `yaml:"be_port"`
-        WebServerPort        int                      `yaml:"web_server_port"`
+        WebServerPort        int                      `yaml:"webserver_port"`
         HeartbeatServicePort int                      `yaml:"heartbeat_service_port"`
         BrpcPort             int                      `yaml:"brpc_port"`
         DeployDir            string                   `yaml:"deploy_dir"`
@@ -108,6 +117,30 @@ type ConfStruct struct {
 }
 
 
+func (rr *RepoStruct) getRepo() *RepoStruct {
+    
+    repoFile, err := ioutil.ReadFile("repo.yaml")
+    if err != nil { panic(err) }
+
+    err = yaml.Unmarshal(repoFile, rr)
+    if err != nil { panic(err) }
+
+    return rr
+}
+
+func GetRepo() {
+
+    var rp  RepoStruct
+    GRepo = rp.getRepo()
+
+    if strings.Contains(GRepo.Repo, "file://") {
+        GDownloadPath = strings.Replace(GRepo.Repo, "file://", "",  -1)
+    } else {
+        GDownloadPath = GSRCtlRoot + "/download"
+    }
+}
+
+
 func (cc *ConfStruct) GetConf(fileName string) *ConfStruct {
 
     yamlFile, err := ioutil.ReadFile(fileName)
@@ -123,7 +156,6 @@ func (cc *ConfStruct) GetConf(fileName string) *ConfStruct {
 
 
 func InitConf(clusterName string, fileName string) {
-
 
     var confS ConfStruct
 
@@ -229,8 +261,19 @@ func WriteBackMeta(cc *ConfStruct, metaFilePath string) {
 
 }
 
-func SetGlobalVar(srVersion string) {
-    GSRVersion = srVersion
+func SetGlobalVar(key string, value string) {
+    
+    var  infoMess         string
+
+    switch key {
+        case "GSRVersion":
+            GSRVersion = value
+        case "GDownloadPath":
+            GDownloadPath = value
+        default:
+            infoMess = fmt.Sprintf("Error in set global variables. Now we only support \" GSRVERSION | GRepo\". [key = %s, value = %s]", key, value)
+            panic(errors.New(infoMess))
+    }
 }
 
 func SetFeEntry(feEntryId int) {
@@ -282,6 +325,7 @@ func TestParseYamlConfig(fileName string) {
         fmt.Printf("[TEST] BeServer -> [%d] -> heartbeat_service_port:           %s\n",     i, yamlConf.BeServers[i].HeartbeatServicePort)
         fmt.Printf("[TEST] BeServer -> [%d] -> deploy_dir:                       %s\n",     i, yamlConf.BeServers[i].DeployDir)
         fmt.Printf("[TEST] BeServer -> [%d] -> storage_dir:                      %s\n",     i, yamlConf.BeServers[i].StorageDir)
+	fmt.Printf("[TEST] BeServer -> [%d] -> PriorityNetworks                  %s\n",     i, yamlConf.BeServers[i].PriorityNetworks)
         fmt.Printf("[TEST] BeServer -> [%d] -> log_dir:                          %s\n",     i, yamlConf.BeServers[i].LogDir)
         fmt.Printf("[TEST] BeServer -> [%d] -> config -> sys_log_level:          %s\n",     i, yamlConf.BeServers[i].Config["create_tablet_worker_count"])
         fmt.Printf("[TEST] BeServer -> [%d] -> config -> sys_log_delete_age:     %s\n",     i, yamlConf.BeServers[i].Config["sys_log_delete_age"])

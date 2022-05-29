@@ -53,7 +53,8 @@ func ModifyClusterConfig() {
         // copy fe config file
 	tmpFeHost := module.GYamlConf.FeServers[i].Host
 	tmpFeQueryPort := module.GYamlConf.FeServers[i].QueryPort
-	tmpFeSourceConfFile := fmt.Sprintf("%s/download/StarRocks-%s/fe/conf/fe.conf", module.GSRCtlRoot, strings.Replace(module.GSRVersion, "v", "", -1))
+        tmpFeSourceConfFile := fmt.Sprintf("%s/StarRocks-%s/fe/conf/fe.conf", module.GDownloadPath, strings.Replace(module.GSRVersion, "v", "", -1))
+	// tmpFeSourceConfFile := fmt.Sprintf("%s/download/StarRocks-%s/fe/conf/fe.conf", module.GSRCtlRoot, strings.Replace(module.GSRVersion, "v", "", -1))
 	tmpFeTargetConfFile := fmt.Sprintf("%s/tmp/fe.conf-%s-%d", module.GSRCtlRoot, tmpFeHost, tmpFeQueryPort)
 
 	err := copyConfigFile(tmpFeSourceConfFile, tmpFeTargetConfFile)
@@ -75,6 +76,8 @@ func ModifyClusterConfig() {
         configMap["http_port"] = strconv.Itoa(module.GYamlConf.FeServers[i].HttpPort)
         configMap["rpc_port"] = strconv.Itoa(module.GYamlConf.FeServers[i].RpcPort)
         configMap["edit_log_port"] = strconv.Itoa(module.GYamlConf.FeServers[i].EditLogPort)
+        configMap["query_port"] = strconv.Itoa(module.GYamlConf.FeServers[i].QueryPort)
+
         for k, v := range configMap {
 	    if v != "0" {
                 appendConfig(tmpFeTargetConfFile, k, v)
@@ -100,7 +103,8 @@ func ModifyClusterConfig() {
         // copy BE config file
         tmpBeHost := module.GYamlConf.BeServers[i].Host
         tmpBeHeartbeatServicePort := module.GYamlConf.BeServers[i].HeartbeatServicePort
-	tmpBeSourceConfFile := fmt.Sprintf("%s/download/StarRocks-%s/be/conf/be.conf", module.GSRCtlRoot, strings.Replace(module.GSRVersion, "v", "", -1))
+        tmpBeSourceConfFile := fmt.Sprintf("%s/StarRocks-%s/be/conf/be.conf", module.GDownloadPath, strings.Replace(module.GSRVersion, "v", "", -1))
+	// tmpBeSourceConfFile := fmt.Sprintf("%s/download/StarRocks-%s/be/conf/be.conf", module.GSRCtlRoot, strings.Replace(module.GSRVersion, "v", "", -1))
         tmpBeTargetConfFile := fmt.Sprintf("%s/tmp/be.conf-%s-%d", module.GSRCtlRoot, tmpBeHost, tmpBeHeartbeatServicePort)
 
         err := copyConfigFile(tmpBeSourceConfFile, tmpBeTargetConfFile)

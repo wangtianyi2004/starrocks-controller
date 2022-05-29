@@ -1,0 +1,3 @@
+repo: "http://192.168.88.89:9000/starrocks-quick-start"
+#repo: "file:///home/sr-dev/.starrocks-controller/test"
+#repo: "http://cdn-thirdparty.starrocks.com"

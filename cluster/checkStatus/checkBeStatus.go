@@ -6,9 +6,14 @@ import(
     "strconv"
     "sr-controller/sr-utl"
     "sr-controller/module"
-    "database/sql"
+//    "database/sql"
 )
 
+
+// 哪个大聪明在 2.2 版本改了 show backends
+// 我真是谢谢你，艹
+
+/*
 type BeStatusStruct struct{
 
     BackendId                int
@@ -36,9 +41,10 @@ type BeStatusStruct struct{
     DataUsedPct              sql.NullString
 
 }
+*/
 
 
-var GBeStatArr []BeStatusStruct
+//var GBeStatArr []BeStatusStruct
 
 func CheckBePortStatus(beId int) (checkPortRes bool, err error) {
 
@@ -49,7 +55,7 @@ func CheckBePortStatus(beId int) (checkPortRes bool, err error) {
     tmpBeHost := module.GYamlConf.BeServers[beId].Host
     tmpSshPort := module.GYamlConf.BeServers[beId].SshPort
     tmpHeartbeatServicePort := module.GYamlConf.BeServers[beId].HeartbeatServicePort
-    checkCMD := fmt.Sprintf("netstat -nltp | grep ':%d '", tmpHeartbeatServicePort)
+    checkCMD := fmt.Sprintf("netstat -an | grep ':%d ' | grep -v ESTABLISHED", tmpHeartbeatServicePort)
 
     output, err := utl.SshRun(tmpUser, tmpKeyRsa, tmpBeHost, tmpSshPort, checkCMD)
 
@@ -68,7 +74,7 @@ func CheckBePortStatus(beId int) (checkPortRes bool, err error) {
     return false, err
 }
 
-
+/*
 func GetBeStatJDBC(beId int) (beStat BeStatusStruct, err error) {
 
     var infoMess string
@@ -79,7 +85,6 @@ func GetBeStatJDBC(beId int) (beStat BeStatusStruct, err error) {
     queryCMD := "show backends"
     tmpBeHost := module.GYamlConf.BeServers[beId].Host
     tmpHeartbeatServicePort := module.GYamlConf.BeServers[beId].HeartbeatServicePort
-
     rows, err := utl.RunSQL(module.GJdbcUser, module.GJdbcPasswd, module.GFeEntryHost, module.GFeEntryQueryPort, module.GJdbcDb, queryCMD)
     if err != nil{
         infoMess = fmt.Sprintf("Error in run sql when check BE status: [BeHost = %s, error = %v]", tmpBeHost, err)
@@ -128,8 +133,84 @@ func GetBeStatJDBC(beId int) (beStat BeStatusStruct, err error) {
     return beStat, err
 }
 
+*/
 
-func CheckBeStatus(beId int) (beStat BeStatusStruct, err error) {
+
+func GetBeStatJDBC(beId int) (beStatus map[string]string, err error) {
+
+    var infoMess                   string
+    //var tmpBeStat                  map[string]interface{}
+    var queryCMD                   string
+    var tmpBeHost                  string
+    var tmpHeartbeatServicePort    int
+
+
+    queryCMD = "show backends"
+    tmpBeHost = module.GYamlConf.BeServers[beId].Host
+    tmpHeartbeatServicePort = module.GYamlConf.BeServers[beId].HeartbeatServicePort
+
+
+    rows, err := utl.RunSQL(module.GJdbcUser, module.GJdbcPasswd, module.GFeEntryHost, module.GFeEntryQueryPort, module.GJdbcDb, queryCMD)
+
+
+    if err != nil{
+        infoMess = fmt.Sprintf("Error in run sql when check BE status: [BeHost = %s, error = %v]", tmpBeHost, err)
+        utl.Log("DEBUG", infoMess)
+        return beStatus, err
+    }
+
+
+    columns, _ := rows.Columns()
+    columnLength := len(columns)
+    cache := make([]interface{}, columnLength)
+
+    for index, _ := range cache {
+        var tmpVal interface{}
+        cache[index] = &tmpVal
+    }
+
+
+    for rows.Next(){
+        err = rows.Scan(cache...)
+
+        if err != nil {
+            infoMess = fmt.Sprintf("Error in scan sql result [BeHost = %s, error = %v]", tmpBeHost, err)
+            utl.Log("DEBUG", infoMess)
+            return beStatus, err
+        }
+
+        /*
+        if string(tmpBeStat.IP) == tmpBeHost && tmpBeStat.HeartbeatServicePort == tmpHeartbeatServicePort {
+            beStat = tmpBeStat
+            //GFeStatusArr[feId] = feStat
+            return beStat, nil
+        }
+        */
+
+        beStatus = make(map[string]string)
+        for i, data := range cache {
+            beStatus[columns[i]] = fmt.Sprintf("%s", *data.(*interface{}))
+            //fmt.Printf("DEBUG >>>>>>> column = %s, value = %s\n", columns[i], item[columns[i]])
+        }
+
+
+	hertbeatPort, _ := strconv.Atoi(beStatus["HeartbeatPort"])
+	if beStatus["IP"] == tmpBeHost && hertbeatPort == tmpHeartbeatServicePort {
+            return beStatus, err
+	}
+	//statList = append(statList, item)
+    }
+
+
+
+
+    //fmt.Println("DEBUG >>>>>>>>>>>>>>> ", statList[0])
+    return beStatus, err
+
+}
+
+
+func CheckBeStatus(beId int) (beStat map[string]string, err error) {
 
     var bePortRun   bool
     bePortRun, err = CheckBePortStatus(beId)
@@ -142,4 +223,12 @@ func CheckBeStatus(beId int) (beStat BeStatusStruct, err error) {
 }
 
 
+func TestBeStatus() {
 
+    module.InitConf("sr-c1", "")
+    feEntryId, _ := GetFeEntry(-1)
+    module.SetFeEntry(feEntryId)
+
+    aaa, _ := CheckBeStatus(0)
+    fmt.Println(aaa)
+}

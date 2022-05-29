@@ -51,6 +51,7 @@ be_servers:
     deploy_dir : /opt/starrocks/be
     storage_dir: /data/starrocks/be/storage
     log_dir: /data/starrocks/be/log
+    priority_networks: 192.168.88.0/24
     config:
       create_tablet_worker_count: 3
   - host: 192.168.88.84
@@ -62,6 +63,7 @@ be_servers:
     deploy_dir : /opt/starrocks/be
     storage_dir: /data/starrocks/be/storage
     log_dir: /data/starrocks/be/log
+    priority_networks: 192.168.88.0/24
     config:
       create_tablet_worker_count: 3
   - host: 192.168.88.85
@@ -73,6 +75,7 @@ be_servers:
     deploy_dir : /opt/starrocks/be
     storage_dir: /data/starrocks/be/storage
     log_dir: /data/starrocks/be/log
+    priority_networks: 192.168.88.0/24
     config:
       create_tablet_worker_count: 3
 

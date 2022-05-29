@@ -27,11 +27,15 @@ func Start(clusterName string, nodeId string, role string) {
     tmpUser = module.GYamlConf.Global.User
     tmpKeyRsa = module.GSshKeyRsa
 
-
+    if checkStatus.CheckClusterName(clusterName) {
+        infoMess = "Don't find the Cluster " + clusterName 
+        utl.Log("ERROR", infoMess)
+        os.Exit(1)
+    }
     // start all cluster: sr-ctl-cluster start sr-c1 
-    // start 1 node: sr-ctl-cluster start sr-c1 -N 192.168.88.33:9010
-    // start all FE node: sr-ctl-cluster start sr-c1 -R FE
-    // start all BE node: sr-ctl-cluster start sr-c1 -R BE
+    // start 1 node: sr-ctl-cluster start sr-c1 --node 192.168.88.33:9010
+    // start all FE node: sr-ctl-cluster start sr-c1 --role FE
+    // start all BE node: sr-ctl-cluster start sr-c1 --role BE
 
     // start all cluster: sr-ctl-cluster start sr-c1
 
@@ -72,7 +76,7 @@ func Start(clusterName string, nodeId string, role string) {
 	// get the node type
 	tmpNodeType, i := checkStatus.GetNodeType(nodeId)
 	if tmpNodeType == "FE" {
-	    infoMess = "Please use -R FE to start all the FE node."
+	    infoMess = "Please use --role FE to start all the FE node."
 	    utl.Log("ERROR", infoMess)
 	    os.Exit(1)
             //tmpNodeHost = module.GYamlConf.FeServers[i].Host
@@ -95,7 +99,7 @@ func Start(clusterName string, nodeId string, role string) {
     }// end of case 3
 
     if nodeId != module.NULLSTR && role != module.NULLSTR {
-        infoMess = "Detect both -N & -R option."
+        infoMess = "Detect both --node & --role option."
 	utl.Log("ERROR", infoMess)
     } // end of case 4
 

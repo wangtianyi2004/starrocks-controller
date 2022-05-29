@@ -6,9 +6,10 @@ import (
     "strconv"
     "sr-controller/sr-utl"
     "sr-controller/module"
-    "database/sql"
+    //"database/sql"
 )
 
+/*
 type FeStatusStruct struct {
 
     FeName              string
@@ -30,9 +31,11 @@ type FeStatusStruct struct {
     FeVersion           sql.NullString
 
 }
+*/
 
 
-var GFeStatusArr []FeStatusStruct
+
+//var GFeStatusArr []FeStatusStruct
 
 
 func CheckFePortStatus(feId int) (checkPortRes bool, err error) {
@@ -46,7 +49,7 @@ func CheckFePortStatus(feId int) (checkPortRes bool, err error) {
     tmpQueryPort := module.GYamlConf.FeServers[feId].QueryPort
 
     // check Port stat by [netstat -nltp | grep 9030]
-    checkCMD := fmt.Sprintf("netstat -nltp | grep ':%d '", tmpQueryPort)
+    checkCMD := fmt.Sprintf("netstat -an | grep ':%d ' | grep -v ESTABLISHED", tmpQueryPort)
     output, err := utl.SshRun(tmpUser, tmpKeyRsa, tmpFeHost, tmpSshPort, checkCMD)
 
     if err != nil {
@@ -65,7 +68,7 @@ func CheckFePortStatus(feId int) (checkPortRes bool, err error) {
 
 }
 
-
+/*
 func GetFeStatJDBC(feId int) (feStat FeStatusStruct, err error) {
 
     var infoMess string
@@ -118,11 +121,67 @@ func GetFeStatJDBC(feId int) (feStat FeStatusStruct, err error) {
 
     return feStat, err
 }
+*/
+
+func GetFeStatJDBC(feId int) (feStat map[string]string, err error) {
+
+    var infoMess string
+    var tmpFeStat map[string]string
+    var feStatus  map[string]string
+    //GJdbcUser = "root"
+    //GJdbcPasswd = ""
+    //GJdbcDb = ""
+    queryCMD := "show frontends"
+    tmpFeHost := module.GYamlConf.FeServers[feId].Host
+    tmpQueryPort := module.GYamlConf.FeServers[feId].QueryPort
+
+    rows, err := utl.RunSQL(module.GJdbcUser, module.GJdbcPasswd, tmpFeHost, tmpQueryPort, module.GJdbcDb, queryCMD)
+    if err != nil{
+        infoMess = fmt.Sprintf("Error in run sql when check fe status: [FeHost = %s, error = %v]", tmpFeHost, err)
+        utl.Log("DEBUG", infoMess)
+        return feStat, err
+    }
+
+    columns, _ := rows.Columns()
+    columnLength := len(columns)
+    cache := make([]interface{}, columnLength)
+
+    for index, _ := range cache {
+        var tmpVal interface{}
+        cache[index] = &tmpVal
+    }
+
+
+    for rows.Next(){
+        err = rows.Scan(cache...)
+
+        if err != nil {
+            infoMess = fmt.Sprintf("Error in scan sql result [FeHost = %s, error = %v]", tmpFeHost, err)
+            utl.Log("DEBUG", infoMess)
+            return feStatus, err
+        }
+
+        feStatus = make(map[string]string)
+        for i, data := range cache {
+            feStatus[columns[i]] = fmt.Sprintf("%s", *data.(*interface{}))
+            //fmt.Printf("DEBUG >>>>>>> column = %s, value = %s\n", columns[i], item[columns[i]])
+        }
+
+        queryPort, _ := strconv.Atoi(feStatus["QueryPort"])
+        if feStatus["IP"]  == tmpFeHost && queryPort == tmpQueryPort {
+            feStat = tmpFeStat
+            //GFeStatusArr[feId] = feStat
+            return feStatus, nil
+        }
+
+    }
+
+    return feStatus, err
+}
 
 
 
-
-func CheckFeStatus(feId int) (feStat FeStatusStruct, err error) {
+func CheckFeStatus(feId int) (feStat map[string]string, err error) {
 
     //var infoMess    string
     var fePortRun   bool
@@ -133,8 +192,19 @@ func CheckFeStatus(feId int) (feStat FeStatusStruct, err error) {
     if fePortRun {
         feStat, err = GetFeStatJDBC(feId)
     }
-
     return feStat, err
+}
+
+
+func TestFeStatus() {
+
+    module.InitConf("sr-c1", "")
+    feEntryId, _ := GetFeEntry(-1)
+    module.SetFeEntry(feEntryId)
+
+    aaa, _ := CheckFeStatus(0)
+    fmt.Println(aaa)
+
 }
 /*
 func CheckFeStatus(feId int, user string, keyRsa string, sshHost string, sshPort int, feQueryPort int) (feStat FeStatusStruct, err error) {
@@ -145,7 +215,7 @@ func CheckFeStatus(feId int, user string, keyRsa string, sshHost string, sshPort
     // check port stat by [netstat -nltp | grep 9030] 
     portStat := CheckFePort(feId)
     
-    cmd := fmt.Sprintf("netstat -nltp | grep ':%d '", feQueryPort)
+    cmd := fmt.Sprintf("netstat -an | grep ':%d ' | grep -v ESTABLISHED", feQueryPort)
     output, err := utl.SshRun(user, keyRsa, sshHost, sshPort, cmd)
 
     if err != nil {

@@ -32,7 +32,7 @@ func StartBeCluster() {
     tmpKeyRsa = "/root/.ssh/id_rsa"
 
     // get FE entry
-    feEntryId, err = checkStatus.GetFeEntry()
+    feEntryId, err = checkStatus.GetFeEntry(-1)
     if err != nil || module.GFeEntryHost == "" || module.GFeEntryPort == 0 {
         infoMess = "Error in get the FE entry, pls check FE status."
 	utl.Log("ERROR", infoMess)

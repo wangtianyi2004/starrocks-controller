@@ -31,9 +31,10 @@ func StopBeNode(user string, keyRsa string, sshHost string, sshPort int, beDeplo
 
 func StopBeCluster(clusterName string) {
 
-    var infoMess string
-    var err error
-    var beStat checkStatus.BeStatusStruct
+    var infoMess                   string
+    var err                        error
+    var beStat                     map[string]string
+
 
     // Stop BE node one by one
     var tmpUser                    string
@@ -59,7 +60,7 @@ func StopBeCluster(clusterName string) {
         err = StopBeNode(tmpUser, tmpKeyRsa, tmpSshHost, tmpSshPort, tmpBeDeployDir)
         if err != nil {
             infoMess = fmt.Sprintf("Error in stoping BE node [BeHost = %s, HeartbeatServicePort = %d, error = %v]", tmpSshHost, tmpHeartbeatServicePort, err)
-            utl.Log("DEBUG", infoMess)   
+            utl.Log("DEBUG", infoMess)
         }
 
         beStat, err = checkStatus.CheckBeStatus(i)
@@ -68,7 +69,7 @@ func StopBeCluster(clusterName string) {
             infoMess = fmt.Sprintf("Error in get the Be status [BeHost = %s, HeartbeatServicePort = %d, error = %v]", tmpSshHost, tmpHeartbeatServicePort, err)
             utl.Log("DEBUG", infoMess)
         }
-        if !beStat.Alive {
+        if beStat["Alive"] == "false" {
             infoMess = fmt.Sprintf("The BE node stop succefully [BeHost = %s, HeartbeatServicePort = %d]", tmpSshHost, tmpHeartbeatServicePort)
             utl.Log("INFO", infoMess)
         } else {

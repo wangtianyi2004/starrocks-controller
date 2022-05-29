@@ -48,7 +48,7 @@ func sshRun(config *ssh.ClientConfig, host string, port int, command string) (ou
     var infoMess string
     client, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", host, port), config)
     if err != nil {
-        errmess = fmt.Sprint("unable to connect: %s error %v", host, err)
+        errmess = fmt.Sprintf("unable to connect: %s error %v", host, err)
         Log("ERROR", errmess)
         return nil, err
     }
@@ -342,29 +342,58 @@ func RenameDir(user string, keyFile string, host string, port int, sourceDir str
 
 }
 
-func TestUploadDir() {
+
+func RemoveDir(user string, keyFile string, host string, port int, dirName string) (err error) {
+
+    var infoMess string
+    //fmt.Printf("DEBUG >>>>>>>>>>> user = %s, keyFile = %s, host = %s, port = %d, dirName = %s\n", user, keyFile, host, port, dirName)
+    cmd := fmt.Sprintf("ls %s", dirName)
+    _, err = SshRun(user, keyFile, host, port, cmd)
+
+    if err != nil {
+        infoMess = fmt.Sprintf("The dir [%s] doesn't exist on [%s:%d]", dirName, host, port)
+        Log("DEBUG", infoMess)
+    }
+
+    sshConfig, err := NewConfig(keyFile, user)
+    if err != nil {
+        infoMess = fmt.Sprintf("Error in remove dir, failed to get the ssh config. [host = %s, dirName, err = %v]", host, dirName, err)
+        Log("ERROR", infoMess)
+        return err
+    }
+
+    sftpClient, err := sftpConnect(sshConfig, host, port)
+    if err != nil {
+        infoMess = fmt.Sprintf("Error in remove dir when create sftp client.[host = %s, dirName = %s, error = %v", host, dirName, err)
+        Log("ERROR", infoMess)
+        return err
+    }
+
+    err = sftpClient.RemoveDirectory(dirName)
+
+    if err != nil {
+        infoMess = fmt.Sprintf("Error in remove dir.[host = %s, dirName = %s, error = %v", host, dirName, err)
+        Log("ERROR", infoMess)
+        return err
+    }
+
+    return nil
+
+}
+
+
+
+func TestDir(dirName string) {
 
 
     // check targetDir exist
-    output, err := SshRun("root", "/root/.ssh/id_rsa",  "192.168.230.41", 22, "ls /opt/starrocks/fe/jdk")
-    fmt.Printf("[TEST] The result of [ls /opt/starrocks/fe/jdk] on 192.168.230.41:22 ---- output = %s, error = %v\n", output, err)
-
-    if err != nil {
-	fmt.Println("[TEST] XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        fmt.Println("[TEST] The target dir [/opt/starrocks/fe/jdk] doesn't exist on [192.168.230.41].")
-        _, err := SshRun("root", "/root/.ssh/id_rsa", "192.168.230.41", 22, "mkdir -p /opt/starrocks/fe/jdk")
-
-	if err != nil {
-	    fmt.Println("[TEST] Error in create folder [/opt/starrocks/fe/jdk] on [192.168.230.41]")
-	    panic(err)
-	}
-
-    }
-/*
-    sftpClient, err := sftpConnect(sshConfig, "192.168.230.41", 22)
-    if err != nil { panic(err) }
-    uploadDirectory(sftpClient, "/tmp/aaaDir", "/opt/soft/tmp")
-*/
+    // DEBUG >>>>>>>>>>> user = starrocks, keyFile = /home/sr-dev/.ssh/id_rsa, host = 192.168.88.83, port = 22, dirName = /opt/starrocks/fe
+    user := "starrocks"
+    keyFile := "/home/sr-dev/.ssh/id_rsa"
+    host := "192.168.88.83"
+    port := 22
+    //dirName := "/opt/starrocks/fe"
+    _ = RemoveDir(user, keyFile, host, port, dirName)
 }
 
 

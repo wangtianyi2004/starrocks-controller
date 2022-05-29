@@ -10,7 +10,6 @@ func RunShellScript(scriptName string) (string, error) {
     var errmess string
     cmd := exec.Command("/bin/bash", "-c", scriptName)
     res, err := cmd.Output()
-    fmt.Printf("DEBUG >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> cmd = %s, res = %s\n", cmd, res)
     if err != nil {
         errmess = fmt.Sprintf("Error in run command [ %s ], err = %v", scriptName, err)
 	Log("ERROR", errmess)

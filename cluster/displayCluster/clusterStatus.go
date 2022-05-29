@@ -28,8 +28,7 @@ func ClusterStat(clusterName string) {
     var err                    error
 
     // Get FE entry
-    feEntryId, err = checkStatus.GetFeEntry()
-    // feEntryHost, feEntryQueryPort, err := checkStatus.GetFeEntry()
+    feEntryId, err = checkStatus.GetFeEntry(-1)
     if err != nil ||  feEntryId == -1 {
         infoMess = "All FE nodes are down, please start FE node and display the cluster status again."
         utl.Log("WARN", infoMess)
@@ -63,8 +62,12 @@ func ClusterStat(clusterName string) {
 	        utl.Log("DEBUG", infoMess)
 	    }
 
-            if feStatStruct.FeAlive {
-                tmpStat = "UP"
+            if feStatStruct["Alive"] == "true" {
+                if feStatStruct["FeIsMaster"] == "true" {
+                    tmpStat = "UP/L"
+                } else {
+                    tmpStat = "UP"
+                }
 	    } else {
                 tmpStat = "DOWN"
 	    }
@@ -97,13 +100,13 @@ func ClusterStat(clusterName string) {
         if !noFeEntry {
             // If we can get a FE entry(more than one FE node is running), we can use [show backends] command by JDBC
             // CheckBeStatus(beId int, user string, keyRsa string, sshHost string, sshPort int, heartbeatServicePort int) (beStat BeStatusStruct, err error)
-            beStatStruct, err := checkStatus.CheckBeStatus(i)
+            beStat, err := checkStatus.CheckBeStatus(i)
 	    if err != nil {
                 infoMess = fmt.Sprintf("Error in checking BE status [BeHost = %s, error = %v]", tmpHost, err)
                 utl.Log("DEBUG", infoMess)
 	    }
 
-	    if beStatStruct.Alive {
+	    if beStat["Alive"] == "true" {
                 tmpStat = "UP"
             } else {
                 tmpStat = "DOWN"

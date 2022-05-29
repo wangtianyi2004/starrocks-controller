@@ -17,7 +17,7 @@ func InitBeCluster(yamlConf *module.ConfStruct) {
 
     var infoMess string
     var err error
-    var beStat checkStatus.BeStatusStruct
+    var beStat map[string]string
 
     // start Fe node one by one
     var tmpUser string
@@ -33,11 +33,10 @@ func InitBeCluster(yamlConf *module.ConfStruct) {
     tmpKeyRsa = module.GSshKeyRsa
 
     // get FE entry
-    feEntryId, err := checkStatus.GetFeEntry()
+    feEntryId, err := checkStatus.GetFeEntry(-1)
     //tmpFeEntryHost = yamlConf.FeServers[feEntryId].Host
     //tmpFeEntryPort = yamlConf.FeServers[feEntryId].QueryPort
     module.SetFeEntry(feEntryId)
-    //feEntryHost, FeEntryqueryPort, err := checkStatus.GetFeEntry()
     if err != nil || feEntryId == -1 {
         infoMess = "Error in get the FE entry, pls check FE status."
 	utl.Log("ERROR", infoMess)
@@ -69,7 +68,7 @@ func InitBeCluster(yamlConf *module.ConfStruct) {
 	    time.Sleep(startWaitTime  * time.Second)
 
             beStat, _ = checkStatus.CheckBeStatus(i)
-            if beStat.Alive {
+            if beStat["Alive"] == "true" {
                 infoMess = fmt.Sprintf("The BE node start succefully [host = %s, heartbeatServicePort = %d]", tmpSshHost, tmpHeartbeatServicePort)
                 utl.Log("INFO", infoMess)
                 break
@@ -79,11 +78,11 @@ func InitBeCluster(yamlConf *module.ConfStruct) {
             }
         } // FOR-END: 3 time to restart BE node
 
-	if !beStat.Alive {
+	if beStat["Alive"] == "false" {
              infoMess = fmt.Sprintf("The BE node start failed [BeHost = %s, HeartbeatServicePort = %d, error = %v]", tmpSshHost, tmpHeartbeatServicePort, err)
         }
 
-	beStatusList = beStatusList + "                                        " + fmt.Sprintf("beHost = %-20sbeHeartbeatServicePort = %d\tbeStatus = %v\n", tmpSshHost, tmpHeartbeatServicePort, beStat.Alive)
+	beStatusList = beStatusList + "                                        " + fmt.Sprintf("beHost = %-20sbeHeartbeatServicePort = %d\tbeStatus = %v\n", tmpSshHost, tmpHeartbeatServicePort, beStat["Alive"])
     }
     beStatusList = "List all BE status:\n" + beStatusList
     utl.Log("OUTPUT", beStatusList)

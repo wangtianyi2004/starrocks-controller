@@ -37,6 +37,7 @@ func IsFileExist(absFileName string, fileSize int64) bool {
     return false
 }
 
+
 func DownloadFile(fileUrl string, localPath string, fileName string) {
 
     var infoMess string

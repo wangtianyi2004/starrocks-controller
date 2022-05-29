@@ -3,7 +3,6 @@ package clusterOption
 import (
 
     "fmt"
-    "os"
     "sr-controller/module"
     "sr-controller/cluster/prepareOption"
     "sr-controller/cluster/modifyConfig"
@@ -17,16 +16,8 @@ import (
 func Deploy(clusterName string, clusterVersion string, metaFile string) {
 
 
-    if !(clusterVersion == "v2.0.1" || clusterVersion == "v2.1.3") {
-    //if clusterVersion != "v2.0.1" || clusterVersion != "v2.1.3" {
-        fmt.Println("Only support v2.0.1 & v2.1.3 version")
-        os.Exit(1)
-    } 
-      
-
-
     module.InitConf(clusterName, metaFile)
-    module.SetGlobalVar(clusterVersion)
+    module.SetGlobalVar("GSRVersion", clusterVersion)
 
     prepareOption.PreCheckSR()  
     prepareOption.CreateDir()

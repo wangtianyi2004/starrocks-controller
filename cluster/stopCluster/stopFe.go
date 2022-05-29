@@ -31,17 +31,17 @@ func StopFeNode(user string, keyRsa string, sshHost string, sshPort int, feDeplo
 
 func StopFeCluster(clusterName string) {
 
-    var infoMess string
-    var err error
-    var feStat checkStatus.FeStatusStruct
+    var infoMess               string
+    var err                    error
+    var feStat                 map[string]string
 
     // start Fe node one by one
-    var tmpUser string
-    var tmpKeyRsa string
-    var tmpSshHost string
-    var tmpSshPort int
-    var tmpFeDeployDir string
-    var tmpFeQueryPort int
+    var tmpUser               string
+    var tmpKeyRsa             string
+    var tmpSshHost            string
+    var tmpSshPort            int
+    var tmpFeDeployDir        string
+    var tmpFeQueryPort        int
     //var feStatusList string
 
     tmpUser = module.GYamlConf.Global.User
@@ -68,7 +68,7 @@ func StopFeCluster(clusterName string) {
             infoMess = fmt.Sprintf("Error in get the fe status [FeHost = %s, error = %v]", tmpSshHost, err)
             utl.Log("DEBUG", infoMess)
         }
-        if !feStat.FeAlive {
+        if feStat["Alive"] == "false" {
             infoMess = fmt.Sprintf("The FE node stop succefully [host = %s, queryPort = %d]", tmpSshHost, tmpFeQueryPort)
             utl.Log("OUTPUT", infoMess)
         } else {

@@ -20,11 +20,11 @@ func DowngradeFeCluster() { //(err error){
 
     var infoMess       string
     var err            error
-    var feStat         checkStatus.FeStatusStruct
+    var feStat         map[string]string
     var feEntryId      int
 
 
-    feEntryId, err = checkStatus.GetFeEntry()
+    feEntryId, err = checkStatus.GetFeEntry(-1)
     if err != nil ||  feEntryId == -1 {
         //infoMess = "All FE nodes are down, please start FE node and display the cluster status again."
         //utl.Log("WARN", infoMess)
@@ -47,9 +47,9 @@ func DowngradeFeCluster() { //(err error){
 
 
         for j := 0; j < 3; j++ {
-            infoMess = fmt.Sprintf("The %d time to check FE status: %v", j, feStat.FeAlive)
+            infoMess = fmt.Sprintf("The %d time to check FE status: %v", j, feStat["Alive"])
             utl.Log("DEBUG", infoMess)
-            if feStat.FeAlive {
+            if feStat["Alive"] == "true"{
                 break
             } else {
                 infoMess = fmt.Sprintf("The FE node doesn't work, wait for 10s and check the status again. [feId = %d]\n", i)
@@ -65,26 +65,26 @@ func DowngradeFeCluster() { //(err error){
             utl.Log("DEBUG", infoMess)
             //return err
         }
-        if !feStat.FeAlive {
+        if feStat["Alive"] == "false" {
             infoMess = fmt.Sprintf("The FE node downgrade failed. The FE node doesn't work. [feId = %d]\n", i)
             utl.Log("ERROR", infoMess)
             //return errors.New(infoMess)
-        } else if ! strings.Contains(feStat.FeVersion.String, strings.Replace(module.GSRVersion, "v", "", -1)) {
-            infoMess = fmt.Sprintf("The FE node downgrade failed.  [feId = %d, targetVersion = %s, currentVersion = v%s]", i, module.GSRVersion, feStat.FeVersion.String)
+        } else if ! strings.Contains(feStat["FeVersion"], strings.Replace(module.GSRVersion, "v", "", -1)) {
+            infoMess = fmt.Sprintf("The FE node downgrade failed.  [feId = %d, targetVersion = %s, currentVersion = v%s]", i, module.GSRVersion, feStat["FeVersion"])
             utl.Log("ERROR", infoMess)
             //return errors.New(infoMess)
         } else {
-            infoMess = fmt.Sprintf("The Fe node downgrade successfully. [feId = %d, currentVersion = v%s]", i, feStat.FeVersion.String)
+            infoMess = fmt.Sprintf("The Fe node downgrade successfully. [feId = %d, currentVersion = v%s]", i, feStat["FeVersion"])
             utl.Log("OUTPUT", infoMess)
         }
     }
 
     //return nil
-    
+
 
 }
 
- 
+
 func DowngradeFeNode(feId int) (err error) {
     // step 1. backup fe lib
     // step 2. download new fe lib
@@ -128,7 +128,8 @@ func DowngradeFeNode(feId int) (err error) {
 
 
     // step2. download new FE lib
-    sourceDir = fmt.Sprintf("%s/download/StarRocks-%s/fe/lib", module.GSRCtlRoot, strings.Replace(module.GSRVersion, "v", "", -1))
+    sourceDir = fmt.Sprintf("%s/StarRocks-%s/fe/lib", module.GDownloadPath, strings.Replace(module.GSRVersion, "v", "", -1))
+    // sourceDir = fmt.Sprintf("%s/download/StarRocks-%s/fe/lib", module.GSRCtlRoot, strings.Replace(module.GSRVersion, "v", "", -1))
     targetDir = fmt.Sprintf("%s/lib", feDeployDir)
     utl.UploadDir(user, keyRsa, sshHost, sshPort, sourceDir, targetDir)
     infoMess = fmt.Sprintf("downgrade FE node - download new FE lib. [host = %s, sourceDir = %s, targetDir = %s]", sshHost, sourceDir, targetDir)

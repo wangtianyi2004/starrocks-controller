@@ -14,7 +14,7 @@ func MkDir(dirPath string) {
     dir, _ := os.Stat(dirPath)
     if dir == nil {
         // dir doesn't exist, create new one
-        e := os.MkdirAll(dirPath, 751)
+        e := os.MkdirAll(dirPath, 0755)
         if e != nil {
             mess = "Error in create folder [" + dirPath + "]"
             Log("ERROR", mess)

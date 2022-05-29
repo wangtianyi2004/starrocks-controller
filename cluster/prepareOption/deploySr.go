@@ -38,14 +38,16 @@ func DistributeFeDir() {
 
         //utl.UploadDir(user string, keyFile string, host string, port int, sourceDir string, targetDir string)
         // upload fe dir
-        feSourceDir := fmt.Sprintf("%s/download/StarRocks-%s/fe", module.GSRCtlRoot, strings.Replace(module.GSRVersion, "v", "", -1))
+        feSourceDir := fmt.Sprintf("%s/StarRocks-%s/fe", module.GDownloadPath, strings.Replace(module.GSRVersion, "v", "", -1))
+        // feSourceDir := fmt.Sprintf("%s/download/StarRocks-%s/fe", module.GSRCtlRoot, strings.Replace(module.GSRVersion, "v", "", -1))
         feTargetDir := module.GYamlConf.FeServers[i].DeployDir
         utl.UploadDir(sshUser, rsaKey, sshHost, sshPort, feSourceDir, feTargetDir)
         infoMess = fmt.Sprintf("Upload dir feSourceDir = [%s] to feTargetDir = [%s] on FeHost = [%s]", feSourceDir, feTargetDir, sshHost)
         utl.Log("INFO", infoMess)
 
         // upload jdk dir
-        jdkSourceDir := fmt.Sprintf("%s/download/jdk1.8.0_301", module.GSRCtlRoot)
+        jdkSourceDir := fmt.Sprintf("%s/jdk1.8.0_301", module.GDownloadPath)
+        // jdkSourceDir := fmt.Sprintf("%s/download/jdk1.8.0_301", module.GSRCtlRoot)
         jdkTargetDir := fmt.Sprintf("%s/jdk", module.GYamlConf.FeServers[i].DeployDir)
         utl.UploadDir(sshUser, rsaKey, sshHost, sshPort, jdkSourceDir, jdkTargetDir)
         infoMess = fmt.Sprintf("Upload dir JDKSourceDir = [%s] to JDKTargetDir = [%s] on FeHost = [%s]", jdkSourceDir, jdkTargetDir, sshHost)
@@ -77,7 +79,8 @@ func DistributeBeDir() {
 	rsaKey := module.GSshKeyRsa
 	sshPort := module.GYamlConf.BeServers[i].SshPort
 	sshHost := module.GYamlConf.BeServers[i].Host
-	beSourceDir := fmt.Sprintf("%s/download/StarRocks-%s/be", module.GSRCtlRoot, strings.Replace(module.GSRVersion, "v", "", -1))
+        beSourceDir := fmt.Sprintf("%s/StarRocks-%s/be", module.GDownloadPath, strings.Replace(module.GSRVersion, "v", "", -1))
+	// beSourceDir := fmt.Sprintf("%s/download/StarRocks-%s/be", module.GSRCtlRoot, strings.Replace(module.GSRVersion, "v", "", -1))
 	beTargetDir := module.GYamlConf.BeServers[i].DeployDir
 
 	//utl.UploadDir(user string, keyFile string, host string, port int, sourceDir string, targetDir string)
