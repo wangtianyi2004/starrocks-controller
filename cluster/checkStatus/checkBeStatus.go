@@ -190,7 +190,6 @@ func GetBeStatJDBC(beId int) (beStatus map[string]string, err error) {
         beStatus = make(map[string]string)
         for i, data := range cache {
             beStatus[columns[i]] = fmt.Sprintf("%s", *data.(*interface{}))
-            //fmt.Printf("DEBUG >>>>>>> column = %s, value = %s\n", columns[i], item[columns[i]])
         }
 
 
@@ -204,7 +203,6 @@ func GetBeStatJDBC(beId int) (beStatus map[string]string, err error) {
 
 
 
-    //fmt.Println("DEBUG >>>>>>>>>>>>>>> ", statList[0])
     return beStatus, err
 
 }

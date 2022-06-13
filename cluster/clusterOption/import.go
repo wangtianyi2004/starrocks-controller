@@ -62,9 +62,6 @@ func ImportCluster(clusterName string, metaFile string) {
 
     importCluster.GetFeConf()
     importCluster.GetBeConf()
-    //fmt.Println("DEBUG >>>>>>>> module.GYamlConf.ClusterInfo", module.GYamlConf.ClusterInfo)
-    //fmt.Println("DEBUG >>>>>>>> module.GYamlConf.FeServers", module.GYamlConf.FeServers)
-    //fmt.Println("DEBUG >>>>>>>> module.GYamlConf.BeServers", module.GYamlConf.BeServers)
 
     module.WriteBackMeta(module.GYamlConf, module.GYamlConf.ClusterInfo.MetaPath)
 

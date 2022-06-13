@@ -12,7 +12,7 @@ func RunShellScript(scriptName string) (string, error) {
     res, err := cmd.Output()
     if err != nil {
         errmess = fmt.Sprintf("Error in run command [ %s ], err = %v", scriptName, err)
-	Log("ERROR", errmess)
+	Log("DEBUG", errmess)
         //panic(err)
         return "", err
     }

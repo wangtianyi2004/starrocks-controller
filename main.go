@@ -6,10 +6,11 @@ import (
     "os"
     "flag"
     "sr-controller/sr-utl"
+    "sr-controller/playground"
     "sr-controller/cluster/clusterOption"
     //"sr-controller/cluster/checkStatus"
     // "sr-controller/module"
-    "sr-controller/cluster/prepareOption"
+    //"sr-controller/cluster/prepareOption"
 
 )
 func main() {
@@ -40,6 +41,7 @@ func main() {
 
         case "playground":
             fmt.Println("Playground component is developping .......................")
+	    playground.RunPlayground()
         case "cluster":
 	    command = os.Args[2]
             switch command {
@@ -147,13 +149,13 @@ func main() {
                case "test":
 		   utl.Log("OUTPUT", "TEST >>>>>>>>>")
 		   // checkStatus.TestFeStatus()
-		   prepareOption.TestPreCheck()
+		   //prepareOption.TestPreCheck()
 		   //prepareOption.PreCheckSR()
+                   //playground.DeployPlayground()
                default:
                     infoMess = fmt.Sprintf("ERROR, sr-ctl-cluster don't support %s option", command)
                     utl.Log("ERROR", infoMess)
             } // end of switch command, end of case cluster
-
 	default:
             fmt.Printf("ERROR component input.\n")
     } // end of switch component

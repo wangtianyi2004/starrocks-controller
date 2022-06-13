@@ -117,12 +117,10 @@ func ScaleIn(clusterName string, nodeId string) {
 
         // drop BE node
         dropCmd = fmt.Sprintf("ALTER SYSTEM DROP BACKEND '%s:%d'", sshHost, beHeartbeatServicePort)
-        //fmt.Printf("DEBUG >>>>>>>>>>>>>>> sqlIp = %s, sqlPort = %s, dropCmd = %s\n", sqlIp, sqlPort, dropCmd)
 
         _, err := utl.RunSQL(sqlUserName, sqlPassword, sqlIp, sqlPort, sqlDbName, dropCmd)
 
         if err != nil {
-            // fmt.Println("DEBUG >>>>>>>>>>>>>", sqlIp, sqlPort, dropCmd)
             infoMess = fmt.Sprintf("Error in scale in BE node. [clusterName = %s, nodeId = %s, error = %s]", clusterName, nodeId, err)
             utl.Log("ERROR", infoMess)
         }

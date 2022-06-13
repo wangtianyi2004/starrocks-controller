@@ -620,7 +620,7 @@ func openFile(sshHost string, sshPort int) (string, string) {
 
     infoMess = fmt.Sprintf("Open files count check failed. Make it more than 65535. [host = %s, openFiles = %d]", sshHost, openFiles)
     utl.Log("DEBUG", infoMess)
-    checkMess = fmt.Sprintf("  [Host = %s, User = %s]  Please add bellowing line in /etc/security/limits.conf\n%s     soft    nofile          65535\n%s     hard    nofile          65535", sshUser, sshUser)
+    checkMess = fmt.Sprintf("  [Host = %s, User = %s]  Please add bellowing line in /etc/security/limits.conf\n%s     soft    nofile          65535\n%s     hard    nofile          65535", sshHost, sshUser, sshUser, sshUser)
     return CHECKFAILED, checkMess
 
 }

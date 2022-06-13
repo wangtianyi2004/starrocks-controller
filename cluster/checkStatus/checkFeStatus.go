@@ -164,7 +164,6 @@ func GetFeStatJDBC(feId int) (feStat map[string]string, err error) {
         feStatus = make(map[string]string)
         for i, data := range cache {
             feStatus[columns[i]] = fmt.Sprintf("%s", *data.(*interface{}))
-            //fmt.Printf("DEBUG >>>>>>> column = %s, value = %s\n", columns[i], item[columns[i]])
         }
 
         queryPort, _ := strconv.Atoi(feStatus["QueryPort"])

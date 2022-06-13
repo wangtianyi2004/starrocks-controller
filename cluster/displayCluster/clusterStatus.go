@@ -63,7 +63,7 @@ func ClusterStat(clusterName string) {
 	    }
 
             if feStatStruct["Alive"] == "true" {
-                if feStatStruct["FeIsMaster"] == "true" {
+                if feStatStruct["IsMaster"] == "true" {
                     tmpStat = "UP/L"
                 } else {
                     tmpStat = "UP"

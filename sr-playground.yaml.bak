@@ -1,0 +1,33 @@
+global:
+    user: "sr-dev"
+    ssh_port: 22
+
+fe_servers:
+  - host: 127.0.0.1
+    ssh_port: 22
+    http_port: 8030
+    rpc_port: 9020
+    query_port: 9030
+    edit_log_port: 9010
+    deploy_dir: /home/sr-dev/.starrocks-controller/playground/fe
+    meta_dir: /home/sr-dev/.starrocks-controller/playground/fe/meta
+    log_dir: /home/sr-dev/.starrocks-controller/playground/fe/log
+    priority_networks: 127.0.0.1/32
+    config:
+      sys_log_level: "INFO"
+      sys_log_delete_age: "1d"
+
+be_servers:
+  - host: 127.0.0.1
+    ssh_port: 22
+    be_port: 9060
+    webserver_port: 8040
+    heartbeat_service_port: 9050
+    brpc_port: 8060
+    deploy_dir : /home/sr-dev/.starrocks-controller/playground/be
+    storage_dir: /home/sr-dev/.starrocks-controller/playground/be/storage
+    log_dir: /home/sr-dev/.starrocks-controller/playground/be/log
+    priority_networks: 127.0.0.1/32
+    config:
+      create_tablet_worker_count: 3
+

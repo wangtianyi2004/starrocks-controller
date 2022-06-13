@@ -10,13 +10,9 @@ import (
 func main() {
 
     preparePkg.PreCheck()
-    fmt.Println("DEBUG >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Precheck end")
     preparePkg.DownloadSRPkg()
-    fmt.Println("DEBUG >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> download end")
     preparePkg.DecompressSRPkg()
-    fmt.Println("DEBUG >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> decompress end")
     preparePkg.DeployPkg()
-    fmt.Println("DEBUG >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> deploypkg end")
 
     startFE.ModifyFEConfig()
     startFE.RunFEProcess()

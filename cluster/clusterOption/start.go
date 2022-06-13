@@ -48,7 +48,6 @@ func Start(clusterName string, nodeId string, role string) {
     //  |  3         | !null      |  null     |  start the FE/BE node (BE only)                 |
     //  |  4         | !null      |  !null    |  error                                          |
     //  -----------------------------------------------------------------------------------------
-    // fmt.Printf("DEBUG >>>>>>>>>>>>>>>>> nodeId = %s, role = %s\n", nodeId, role)
     if nodeId == module.NULLSTR && role == module.NULLSTR {
         // case id 1: - start all cluster: sr-ctl-cluster start sr-c1
         startCluster.StartFeCluster()

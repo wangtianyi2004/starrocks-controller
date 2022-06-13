@@ -346,7 +346,6 @@ func RenameDir(user string, keyFile string, host string, port int, sourceDir str
 func RemoveDir(user string, keyFile string, host string, port int, dirName string) (err error) {
 
     var infoMess string
-    //fmt.Printf("DEBUG >>>>>>>>>>> user = %s, keyFile = %s, host = %s, port = %d, dirName = %s\n", user, keyFile, host, port, dirName)
     cmd := fmt.Sprintf("ls %s", dirName)
     _, err = SshRun(user, keyFile, host, port, cmd)
 
@@ -387,7 +386,6 @@ func TestDir(dirName string) {
 
 
     // check targetDir exist
-    // DEBUG >>>>>>>>>>> user = starrocks, keyFile = /home/sr-dev/.ssh/id_rsa, host = 192.168.88.83, port = 22, dirName = /opt/starrocks/fe
     user := "starrocks"
     keyFile := "/home/sr-dev/.ssh/id_rsa"
     host := "192.168.88.83"

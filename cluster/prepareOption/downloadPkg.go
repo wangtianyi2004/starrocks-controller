@@ -56,9 +56,10 @@ func GetDownloadUrl(srVersion string)  (downloadUrl string) {
         os.Exit(1)
     }
 
-    
+
     versionList := strings.Split(string(robots), "\n")
     vLabel := fmt.Sprintf("[%s]", srVersion)
+
     for i := 0; i < len(versionList); i++ {
         if strings.Contains(versionList[i], vLabel) {
             downloadUrl = strings.Replace(versionList[i], vLabel, "", -1)
@@ -70,10 +71,10 @@ func GetDownloadUrl(srVersion string)  (downloadUrl string) {
     }
 
     if downloadUrl == "" {
-        infoMess = fmt.Sprintf("Error in get version %s package, pls check it again", srVersion)
+        infoMess = fmt.Sprintf("Error in get version %s package, pls check it again. [DownloadUrl = %s]", srVersion, downloadUrl)
         utl.Log("ERROR", infoMess)
         os.Exit(1)
-    } 
+    }
     return downloadUrl
 
 }
