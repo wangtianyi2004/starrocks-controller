@@ -1,0 +1,29 @@
+global:
+  user: starrocks
+fe_servers:
+- host: 192.168.88.83
+  ssh_port: 22
+  query_port: 9030
+  deploy_dir: /opt/starrocks/fe
+- host: 192.168.88.84
+  ssh_port: 22
+  query_port: 9030
+  deploy_dir: /opt/starrocks/fe
+- host: 192.168.88.85
+  ssh_port: 22
+  query_port: 9030
+  deploy_dir: /opt/starrocks/fe
+be_servers:
+- host: 192.168.88.83
+  ssh_port: 22
+  heartbeat_service_port: 9050
+  deploy_dir: /opt/starrocks/be
+- host: 192.168.88.84
+  ssh_port: 22
+  heartbeat_service_port: 9050
+  deploy_dir: /opt/starrocks/be
+- host: 192.168.88.85
+  ssh_port: 22
+  heartbeat_service_port: 9050
+  deploy_dir: /opt/starrocks/be
+

@@ -21,13 +21,14 @@ func GetFeConf() {
     var infoMess      string
     var feHttpUrl     string
 
+
     for i := 0; i < len(module.GYamlConf.FeServers); i++ {
 
         feStat, err := checkStatus.CheckFeStatus(i)
-        module.GYamlConf.FeServers[i].HttpPort, _ = strconv.Atoi(feStat["FeHttpPort"])
-	module.GYamlConf.FeServers[i].RpcPort, _ = strconv.Atoi(feStat["FeRpcPort"])
-	module.GYamlConf.FeServers[i].EditLogPort, _ = strconv.Atoi(feStat["FeEditLogPort"])
-	module.GSRVersion = "v" + strings.Split(feStat["FeVersion"], "-")[0]
+        module.GYamlConf.FeServers[i].HttpPort, _ = strconv.Atoi(feStat["HttpPort"])
+	module.GYamlConf.FeServers[i].RpcPort, _ = strconv.Atoi(feStat["RpcPort"])
+	module.GYamlConf.FeServers[i].EditLogPort, _ = strconv.Atoi(feStat["EditLogPort"])
+	module.GSRVersion = "v" + strings.Split(feStat["Version"], "-")[0]
 	rootPasswd := ""
 
 	feHttpUrl = fmt.Sprintf("http://root:%s@%s:%d/variable", rootPasswd, module.GYamlConf.FeServers[i].Host, module.GYamlConf.FeServers[i].HttpPort)

@@ -40,7 +40,6 @@ func main() {
     switch component {
 
         case "playground":
-            fmt.Println("Playground component is developping .......................")
 	    playground.RunPlayground()
         case "cluster":
 	    command = os.Args[2]
