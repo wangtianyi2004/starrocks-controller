@@ -2,10 +2,10 @@ package clusterOption
 
 
 import(
-    "sr-controller/cluster/displayCluster"
-    "sr-controller/cluster/checkStatus"
-    "sr-controller/module"
-    "sr-controller/sr-utl"
+    "stargo/cluster/displayCluster"
+    "stargo/cluster/checkStatus"
+    "stargo/module"
+    "stargo/sr-utl"
     "os"
 )
 

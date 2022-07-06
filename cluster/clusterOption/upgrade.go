@@ -4,11 +4,11 @@ import(
 
     "fmt"
     "os"
-    "sr-controller/module"
-    "sr-controller/sr-utl"
-    "sr-controller/cluster/checkStatus"
-    "sr-controller/cluster/prepareOption"
-    "sr-controller/cluster/upgradeCluster"
+    "stargo/module"
+    "stargo/sr-utl"
+    "stargo/cluster/checkStatus"
+    "stargo/cluster/prepareOption"
+    "stargo/cluster/upgradeCluster"
 )
 
 func Upgrade(clusterName string, clusterVersion string) {

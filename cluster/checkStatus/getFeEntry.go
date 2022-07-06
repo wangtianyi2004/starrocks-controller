@@ -5,8 +5,8 @@ import(
     "errors"
     "strings"
     "strconv"
-    "sr-controller/module"
-    "sr-controller/sr-utl"
+    "stargo/module"
+    "stargo/sr-utl"
 )
 
 func GetFeEntry(blackFeNodeId int) (feEntryId int, err error) {

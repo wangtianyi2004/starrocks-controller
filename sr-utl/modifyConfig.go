@@ -100,7 +100,7 @@ func AppendConfig(fileName string, configKey string, configValue string) (err er
             if match {
 	        infoMess := fmt.Sprintf("Comment the default value [fileName = %s, configKey = %s, configValue = %s]", fileName, configKey, configValue)
 		Log("DEBUG", infoMess)
-		lines[i] = "# " + lines[i] + "\t\t\t## comment by sr-controller"
+		lines[i] = "# " + lines[i] + "\t\t\t## comment by stargo"
 	    }
     }
 

@@ -7,8 +7,8 @@ import(
     "strconv"
     "path"
     "regexp"
-    "sr-controller/module"
-    "sr-controller/sr-utl"
+    "stargo/module"
+    "stargo/sr-utl"
 )
 
 

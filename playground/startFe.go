@@ -2,8 +2,8 @@ package playground
 
 import (
 
-    "sr-controller/sr-utl"
-    "sr-controller/module"
+    "stargo/sr-utl"
+    "stargo/module"
     "fmt"
     "os"
     "time"
@@ -66,7 +66,7 @@ func ModifyFEConfig() {
 func RunFEProcess() {
 
     var infoMess string
-    // mkdir /root/.starrocks-controller/playground/fe/meta
+    // mkdir /root/.stargo/playground/fe/meta
     metaDir := module.GSRCtlRoot + "/playground/fe/meta"
     _, err := os.Stat(metaDir)
     if err == nil {

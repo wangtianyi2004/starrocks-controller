@@ -2,7 +2,7 @@ package playground
 
 import (
 
-    "sr-controller/module"
+    "stargo/module"
     "time"
     "fmt"
     _ "embed"
@@ -22,7 +22,7 @@ func InitPlaygroundConf(){
     module.GSshKeyRsa = fmt.Sprintf("%s/.ssh/id_rsa", osUser.HomeDir)
     module.GSRCtlRoot = os.Getenv("SRCTLROOT")
     if module.GSRCtlRoot == "" {
-        module.GSRCtlRoot = fmt.Sprintf("%s/.starrocks-controller", osUser.HomeDir)
+        module.GSRCtlRoot = fmt.Sprintf("%s/.stargo", osUser.HomeDir)
     }
     tmpDeployDir := fmt.Sprintf("%s/playground", module.GSRCtlRoot)
 

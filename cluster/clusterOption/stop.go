@@ -1,10 +1,10 @@
 package clusterOption
 
 import(
-    "sr-controller/cluster/stopCluster"
-    "sr-controller/module"
-    "sr-controller/sr-utl"
-    "sr-controller/cluster/checkStatus"
+    "stargo/cluster/stopCluster"
+    "stargo/module"
+    "stargo/sr-utl"
+    "stargo/cluster/checkStatus"
     "fmt"
     "os"
 )

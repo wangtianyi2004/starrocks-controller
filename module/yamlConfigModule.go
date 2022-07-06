@@ -10,7 +10,7 @@ import (
     "time"
     "strings"
     "errors"
-    "sr-controller/sr-utl"
+    "stargo/sr-utl"
 )
 
 
@@ -166,7 +166,7 @@ func InitConf(clusterName string, fileName string) {
     // get sr-ctl root dir
     GSRCtlRoot = os.Getenv("SRCTLROOT")
     if GSRCtlRoot == "" {
-        GSRCtlRoot = fmt.Sprintf("%s/.starrocks-controller", osUser.HomeDir)
+        GSRCtlRoot = fmt.Sprintf("%s/.stargo", osUser.HomeDir)
     }
 
     // get the write back meta path
@@ -198,7 +198,7 @@ func AppendConf(clusterName string) {
     GSshKeyRsa = fmt.Sprintf("%s/.ssh/id_rsa", osUser.HomeDir)
     GSRCtlRoot = os.Getenv("SRCTLROOT")
     if GSRCtlRoot == "" {
-        GSRCtlRoot = fmt.Sprintf("%s/.starrocks-controller", osUser.HomeDir)
+        GSRCtlRoot = fmt.Sprintf("%s/.stargo", osUser.HomeDir)
     }
     metaFile = fmt.Sprintf("%s/cluster/%s/meta.yaml", GSRCtlRoot, clusterName)
 
@@ -232,7 +232,7 @@ func WriteBackMeta(cc *ConfStruct, metaFilePath string) {
 	infoMess = fmt.Sprintf(`You can shoot the trouble as bellowing step:
 	        1. check the meta file status [fileName = %s]
 		2. check the cluster name you input [clusterName = %s]
-		3. check the os env $SRCTLROOT, if you don't set this env variable, please check the ~/.starrocks-controller folder
+		3. check the os env $SRCTLROOT, if you don't set this env variable, please check the ~/.stargo folder
 	`, metaFileName, clusterName)
 	// panic(err)
     }

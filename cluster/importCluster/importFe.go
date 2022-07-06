@@ -3,9 +3,9 @@ package importCluster
 import (
 
     "fmt"
-    "sr-controller/module"
-    "sr-controller/sr-utl"
-    "sr-controller/cluster/checkStatus"
+    "stargo/module"
+    "stargo/sr-utl"
+    "stargo/cluster/checkStatus"
     "io/ioutil"
     "net/http"
     "regexp"

@@ -7,10 +7,10 @@ import (
     "time"
     "os"
     "os/user"
-    "sr-controller/module"
-    "sr-controller/sr-utl"
-    "sr-controller/cluster/checkStatus"
-    "sr-controller/cluster/importCluster"
+    "stargo/module"
+    "stargo/sr-utl"
+    "stargo/cluster/checkStatus"
+    "stargo/cluster/importCluster"
 
 )
 
@@ -24,7 +24,7 @@ func ImportCluster(clusterName string, metaFile string) {
     osUser, _ := user.Current()
     module.GSRCtlRoot = os.Getenv("SRCTLROOT")
     if module.GSRCtlRoot == "" {
-        module.GSRCtlRoot = fmt.Sprintf("%s/.starrocks-controller", osUser.HomeDir)
+        module.GSRCtlRoot = fmt.Sprintf("%s/.stargo", osUser.HomeDir)
     }
 
 

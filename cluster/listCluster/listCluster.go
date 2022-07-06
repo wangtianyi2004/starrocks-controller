@@ -2,8 +2,8 @@ package listCluster
 
 import (
     "fmt"
-    "sr-controller/module"
-    "sr-controller/sr-utl"
+    "stargo/module"
+    "stargo/sr-utl"
     "io/ioutil"
 )
 

@@ -6,12 +6,12 @@ import (
     "time"
     "strings"
     //"errors"
-    "sr-controller/module"
-    "sr-controller/sr-utl"
-    "sr-controller/cluster/stopCluster"
-    "sr-controller/cluster/startCluster"
-    "sr-controller/cluster/checkStatus"
-    //"sr-controller/cluster/prepareOption"
+    "stargo/module"
+    "stargo/sr-utl"
+    "stargo/cluster/stopCluster"
+    "stargo/cluster/startCluster"
+    "stargo/cluster/checkStatus"
+    //"stargo/cluster/prepareOption"
 
 )
 

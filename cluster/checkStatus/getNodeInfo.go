@@ -5,8 +5,8 @@ import(
     "fmt"
     "os"
     "strconv"
-    "sr-controller/module"
-    "sr-controller/sr-utl"
+    "stargo/module"
+    "stargo/sr-utl"
 )
 
 

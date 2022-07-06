@@ -3,10 +3,10 @@ package clusterOption
 import (
 
     "fmt"
-    "sr-controller/module"
-    "sr-controller/cluster/prepareOption"
-    "sr-controller/cluster/modifyConfig"
-    "sr-controller/cluster/startCluster"
+    "stargo/module"
+    "stargo/cluster/prepareOption"
+    "stargo/cluster/modifyConfig"
+    "stargo/cluster/startCluster"
 
 )
 

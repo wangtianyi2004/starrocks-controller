@@ -1,8 +1,8 @@
 package playground
 
 import (
-    "sr-controller/sr-utl"
-    "sr-controller/module"
+    "stargo/sr-utl"
+    "stargo/module"
     "fmt"
     "time"
     "strings"
@@ -60,7 +60,7 @@ func AddBENode() {
 func RunBEProcess() {
 
     var infoMess     string
-    // mkdir /root/.starrocks-controller/playground/fe/meta
+    // mkdir /root/.stargo/playground/fe/meta
     storageDir := module.GSRCtlRoot + "/playground/be/storage"
     _, err := os.Stat(storageDir)
     if err == nil {

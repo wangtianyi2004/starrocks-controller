@@ -4,8 +4,8 @@ import (
 
     "fmt"
     "os"
-    "sr-controller/cluster/prepareOption"
-    "sr-controller/module"
+    "stargo/cluster/prepareOption"
+    "stargo/module"
 )
 
 
@@ -30,7 +30,7 @@ func DistributePlaygroundBinary() {
     var targetDir    string
     var err          error
 
-    // module.GDownloadPath is the folder /home/sr-dev/.starrocks-controller/download
+    // module.GDownloadPath is the folder /home/sr-dev/.stargo/download
 
     // deploy jdk folder
     sourceDir = module.GDownloadPath + "/jdk1.8.0_301"

@@ -3,10 +3,10 @@ package scaleOutCluster
 import (
     "fmt"
     "time"
-    "sr-controller/sr-utl"
-    "sr-controller/module"
-    "sr-controller/cluster/startCluster"
-    "sr-controller/cluster/checkStatus"
+    "stargo/sr-utl"
+    "stargo/module"
+    "stargo/cluster/startCluster"
+    "stargo/cluster/checkStatus"
 )
 
 

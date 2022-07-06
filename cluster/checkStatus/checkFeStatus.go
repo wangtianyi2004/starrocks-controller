@@ -4,8 +4,8 @@ import (
     "fmt"
     "strings"
     "strconv"
-    "sr-controller/sr-utl"
-    "sr-controller/module"
+    "stargo/sr-utl"
+    "stargo/module"
     //"database/sql"
 )
 

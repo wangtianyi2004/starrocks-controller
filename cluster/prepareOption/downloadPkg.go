@@ -2,8 +2,8 @@ package prepareOption
 
 
 import (
-    "sr-controller/sr-utl"
-    "sr-controller/module"
+    "stargo/sr-utl"
+    "stargo/module"
     "fmt"
     "os"
     "io/ioutil"

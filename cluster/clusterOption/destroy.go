@@ -2,11 +2,11 @@ package clusterOption
 
 
 import(
-    "sr-controller/cluster/destroyCluster"
-    "sr-controller/module"
-    "sr-controller/sr-utl"
+    "stargo/cluster/destroyCluster"
+    "stargo/module"
+    "stargo/sr-utl"
     "os"
-    "sr-controller/cluster/checkStatus"
+    "stargo/cluster/checkStatus"
 )
 
 func Destroy(clusterName string) {

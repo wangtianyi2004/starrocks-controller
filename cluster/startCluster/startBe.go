@@ -5,9 +5,9 @@ import(
     "fmt"
     "time"
 //    "errors"
-    "sr-controller/sr-utl"
-    "sr-controller/module"
-    "sr-controller/cluster/checkStatus"
+    "stargo/sr-utl"
+    "stargo/module"
+    "stargo/cluster/checkStatus"
 )
 
 

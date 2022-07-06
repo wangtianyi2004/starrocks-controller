@@ -4,11 +4,11 @@ import(
 
     "fmt"
     "os"
-    "sr-controller/module"
-    "sr-controller/sr-utl"
-    "sr-controller/cluster/checkStatus"
-    "sr-controller/cluster/prepareOption"
-    "sr-controller/cluster/downgradeCluster"
+    "stargo/module"
+    "stargo/sr-utl"
+    "stargo/cluster/checkStatus"
+    "stargo/cluster/prepareOption"
+    "stargo/cluster/downgradeCluster"
 )
 
 func Downgrade(clusterName string, clusterVersion string) {

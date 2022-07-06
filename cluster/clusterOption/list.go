@@ -4,8 +4,8 @@ import (
     "os"
     "os/user"
     "fmt"
-    "sr-controller/cluster/listCluster"
-    "sr-controller/module"
+    "stargo/cluster/listCluster"
+    "stargo/module"
 )
 
 func List() {
@@ -14,7 +14,7 @@ func List() {
     osUser, _ := user.Current()
     module.GSRCtlRoot = os.Getenv("SRCTLROOT")
     if module.GSRCtlRoot == "" {
-        module.GSRCtlRoot = fmt.Sprintf("%s/.starrocks-controller", osUser.HomeDir)
+        module.GSRCtlRoot = fmt.Sprintf("%s/.stargo", osUser.HomeDir)
     }
 
     listCluster.ListCluster()

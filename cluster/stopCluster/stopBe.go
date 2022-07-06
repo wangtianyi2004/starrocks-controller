@@ -2,9 +2,9 @@ package stopCluster
 
 import (
     "fmt"
-    "sr-controller/sr-utl"
-    "sr-controller/module"
-    "sr-controller/cluster/checkStatus"
+    "stargo/sr-utl"
+    "stargo/module"
+    "stargo/cluster/checkStatus"
 )
 
 // func startFeNode(user string, keyRsa string, sshHost string, sshPort int, editLogPort int, feDeployDir string) (err error) {
@@ -74,7 +74,7 @@ func StopBeCluster(clusterName string) {
             utl.Log("INFO", infoMess)
         } else {
             infoMess = fmt.Sprintf("The BE node stop failed [BeHost = %s, HeartbeatServicePort = %d]", tmpSshHost, tmpHeartbeatServicePort)
-            utl.Log("ERROR", infoMess)
+            utl.Log("DEBUG", infoMess)
         }
     }
 

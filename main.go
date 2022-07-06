@@ -5,12 +5,12 @@ import (
     "fmt"
     "os"
     "flag"
-    "sr-controller/sr-utl"
-    "sr-controller/playground"
-    "sr-controller/cluster/clusterOption"
-    //"sr-controller/cluster/checkStatus"
-    // "sr-controller/module"
-    //"sr-controller/cluster/prepareOption"
+    "stargo/sr-utl"
+    "stargo/playground"
+    "stargo/cluster/clusterOption"
+    //"stargo/cluster/checkStatus"
+    // "stargo/module"
+    //"stargo/cluster/prepareOption"
 
 )
 func main() {

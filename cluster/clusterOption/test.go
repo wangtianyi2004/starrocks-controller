@@ -2,8 +2,8 @@ package clusterOption
 
 import (
 
-    "sr-controller/module"
-    "sr-controller/cluster/prepareOption"
+    "stargo/module"
+    "stargo/cluster/prepareOption"
 
 )
 

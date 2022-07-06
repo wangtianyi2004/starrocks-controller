@@ -1,6 +1,6 @@
       
 global:
-    user: ""
+    user: "starrocks"
     ssh_port: 22
 
 fe_servers:
@@ -17,57 +17,9 @@ fe_servers:
     config:
       sys_log_level: "INFO"
       sys_log_delete_age: "1d"
-  - host: 192.168.88.82
-    ssh_port: 22
-    http_port: 8030
-    rpc_port: 9020
-    query_port: 9030
-    edit_log_port: 9010
-    deploy_dir: /opt/starrocks/fe
-    meta_dir: /opt/starrocks/fe/meta
-    log_dir: /opt/starrocks/fe/log
-    priority_networks: 192.168.88.0/24
-    config:
-      sys_log_delete_age: "2d"
-  - host: 192.168.88.83
-    ssh_port: 22
-    http_port: 8030
-    rpc_port: 9020
-    query_port: 9030
-    edit_log_port: 9010
-    deploy_dir: /opt/starrocks/fe
-    meta_dir: /opt/starrocks/fe/meta
-    log_dir: /opt/starrocks/fe/log
-    priority_networks: 192.168.88.0/24
-    config:
-      sys_log_delete_age: "3d"
 
 be_servers:
   - host: 192.168.88.81
-    ssh_port: 22
-    be_port: 9060
-    webserver_port: 8040
-    heartbeat_service_port: 9050
-    brpc_port: 8060
-    deploy_dir : /opt/starrocks/be
-    storage_dir: /opt/starrocks/be/storage
-    log_dir: /opt/starrocks/be/log
-    priority_networks: 192.168.88.80/24
-    config:
-      create_tablet_worker_count: 3
-  - host: 192.168.88.82
-    ssh_port: 22
-    be_port: 9060
-    webserver_port: 8040
-    heartbeat_service_port: 9050
-    brpc_port: 8060
-    deploy_dir : /opt/starrocks/be
-    storage_dir: /opt/starrocks/be/storage
-    log_dir: /opt/starrocks/be/log
-    priority_networks: 192.168.88.80/24
-    config:
-      create_tablet_worker_count: 3
-  - host: 192.168.88.83
     ssh_port: 22
     be_port: 9060
     webserver_port: 8040

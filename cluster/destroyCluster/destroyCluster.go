@@ -3,8 +3,8 @@ package destroyCluster
 import(
     "fmt"
     "os"
-    "sr-controller/sr-utl"
-    "sr-controller/module"
+    "stargo/sr-utl"
+    "stargo/module"
 )
 
 func DestroyCluster(clusterName string) {

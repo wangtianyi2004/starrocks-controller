@@ -3,8 +3,8 @@ import (
     "fmt"
     "strconv"
     "strings"
-    "sr-controller/module"
-    "sr-controller/sr-utl"
+    "stargo/module"
+    "stargo/sr-utl"
 )
 
 

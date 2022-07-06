@@ -5,10 +5,10 @@ import (
     "time"
 //    "strings"
     "os"
-    "sr-controller/sr-utl"
-    "sr-controller/module"
-    "sr-controller/cluster/checkStatus"
-    "sr-controller/cluster/stopCluster"
+    "stargo/sr-utl"
+    "stargo/module"
+    "stargo/cluster/checkStatus"
+    "stargo/cluster/stopCluster"
 )
 
 
